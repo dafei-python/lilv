@@ -52,10 +52,13 @@ bank/
 │       ├── values/                     # 浅色主题
 │       └── values-night/               # 暗色主题
 ├── data-pipeline/                      # 数据管线
-│   ├── scripts/scraper.py              # 抓取脚本
-│   ├── public/rates.json               # 输出产物（APP 拉取的就是这个）
+│   ├── scripts/scraper.py              # 抓取脚本（输出到 ../../docs/rates.json）
 │   └── requirements.txt
-├── .github/workflows/daily.yml         # 每日 cron 抓取+部署
+├── docs/                               # GitHub Pages 发布目录
+│   ├── rates.json                      # APP 拉取的就是这个
+│   ├── CNAME                           # 自定义子域名 lilv.dafei-python.cn
+│   └── .nojekyll                       # 禁用 Jekyll 处理
+├── .github/workflows/daily.yml         # 每日 cron 抓取+commit（Pages 自动重新部署）
 └── settings.gradle.kts / build.gradle.kts / gradle/libs.versions.toml
 ```
 

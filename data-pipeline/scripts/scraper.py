@@ -5,7 +5,7 @@
 =======================
 
 每日由 GitHub Actions 调用一次（cron 9:30 北京时间 ≈ 1:30 UTC），
-抓取以下权威源的最新利率，写入 data-pipeline/public/rates.json：
+抓取以下权威源的最新利率，写入 docs/rates.json（GitHub Pages 发布目录）：
 
   1. LPR —— 中国货币网（央行授权发布）
      https://www.chinamoney.com.cn/chinese/bklpr/
@@ -38,7 +38,7 @@ from bs4 import BeautifulSoup
 # 配置
 # ============================================================
 
-OUTPUT_PATH = Path(__file__).resolve().parent.parent / "public" / "rates.json"
+OUTPUT_PATH = Path(__file__).resolve().parent.parent.parent / "docs" / "rates.json"
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_6) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"

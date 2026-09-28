@@ -42,22 +42,22 @@ jobs:
 
       - name: Commit changes
         run: |
-          # 只有 public/rates.json 变化时才提交
-          if git diff --quiet public/rates.json; then
+          # 只有 docs/rates.json 变化时才提交
+          if git diff --quiet docs/rates.json; then
             echo "No changes, skip commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/rates.json
+          git add docs/rates.json
           git commit -m "chore(rates): daily refresh $(date -u +'%Y-%m-%d')"
           git push
 
       # ========================================
       # GitHub Pages 自动部署
       # 不需要任何 secrets 或外部服务：
-      # 1. 在仓库 Settings → Pages 开启 main 分支 /data-pipeline/public 目录
-      # 2. 仓库根目录的 CNAME 文件告诉 GitHub 自定义子域名
-      # 3. 每次 push rates.json 后，GitHub Pages 自动重新部署
+      # 1. 在仓库 Settings → Pages 开启 main 分支 /docs 目录
+      # 2. docs/CNAME 文件告诉 GitHub 自定义子域名 lilv.dafei-python.cn
+      # 3. 每次 push docs/rates.json 后，GitHub Pages 自动重新部署
       # 4. 部署后访问 https://lilv.dafei-python.cn/rates.json
       # ========================================
