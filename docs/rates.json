@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T09:30:00+08:00",
+  "generatedAt": "2026-09-28T16:23:07+08:00",
   "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网",
   "deposit": {
     "banks": [
@@ -14,7 +14,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
@@ -28,7 +28,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
@@ -42,7 +42,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
@@ -56,7 +56,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
@@ -70,7 +70,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       }
     ]
@@ -78,36 +78,84 @@
   "lpr": {
     "current": {
       "date": "2026-09-20",
-      "lpr1y": 3.00,
-      "lpr5y": 3.50
+      "lpr1y": 3.0,
+      "lpr5y": 3.5
     },
     "history": [
-      { "date": "2026-09-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-08-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-07-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-06-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-05-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-04-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-03-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-02-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-01-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2025-12-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2025-11-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2025-10-20", "lpr1y": 3.00, "lpr5y": 3.50 }
+      {
+        "date": "2026-09-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-08-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-07-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-06-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-05-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-04-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-03-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-02-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2026-01-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2025-12-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2025-11-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2025-10-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      }
     ]
   },
   "fund": {
-    "first5yBelow": 2.10,
-    "first5yAbove": 2.60,
+    "first5yBelow": 2.1,
+    "first5yAbove": 2.6,
     "second5yBelow": 2.525,
     "second5yAbove": 3.075,
     "effectiveSince": "2025-05-08"
   },
   "mortgageReference": {
     "firstFloorMin": 3.05,
-    "firstFloorMax": 3.30,
-    "secondFloorMin": 3.30,
-    "secondFloorMax": 3.60,
+    "firstFloorMax": 3.2,
+    "secondFloorMin": 3.25,
+    "secondFloorMax": 3.45,
     "note": "首套房贷执行利率 ≈ LPR-45BP（参考城市：上海、北京等一线城市）"
   }
 }
