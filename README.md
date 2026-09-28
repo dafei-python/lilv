@@ -8,7 +8,7 @@
 ## 设计理念
 
 - **权威数据**：所有数字均来自中国人民银行、全国银行间同业拆借中心、各商业银行官网，不掺一丝自媒体转述。
-- **零成本自动化**：GitHub Actions 每日定时抓取 → Cloudflare Pages 静态托管 → APP 拉取 JSON。全程免费。
+- **零成本自动化**：GitHub Actions 每日定时抓取 → GitHub Pages 静态托管 → APP 拉取 JSON。全程免费。
 - **极简、紧凑、不啰嗦**：四个 Tab，存/贷/算/关于，无注册无登录无弹窗。
 - **暗色模式与图标**：跟随系统主题，自适应图标含单色层，Android 13+ 主题图标自动染色。
 - **"看变化"**：本地 Room 缓存历史快照，每次拉取与上一份对比，自动生成 "工行 1 年期 0.95% → 0.90%（−5BP）" 变动横幅。
@@ -80,20 +80,21 @@ bank/
 
 ## 数据管线（一次性配置）
 
-1. **fork 或推到 GitHub**
+1. **推到 GitHub 仓库**（公开仓库，私仓的 Pages 需要付费）
 
-2. **创建 Cloudflare Pages 项目**：在 Cloudflare Dashboard → Pages → Create project（先空创建一个名为 `lilv` 的项目，构建命令留空，输出目录 `public`）。
+2. **开启 GitHub Pages**：仓库 Settings → Pages → Source 选 `Deploy from a branch` → Branch 选 `main` / 文件夹选 `/docs` → Save。`docs/CNAME` 已声明自定义子域名 `lilv.dafei-python.cn`。
 
-3. **在 GitHub 仓库 Settings → Secrets 中添加**：
-   - `CLOUDFLARE_API_TOKEN` — Cloudflare API Token（权限：Account → Cloudflare Pages → Edit）
-   - `CLOUDFLARE_ACCOUNT_ID` — Cloudflare Account ID
-   - `CLOUDFLARE_PROJECT_NAME` — Pages 项目名（如 `lilv`）
+3. **配置 DNS 解析**：在你的域名 DNS 服务商（Cloudflare/DNSPod/阿里云等）添加一条 CNAME 记录：
+   - 主机记录：`lilv`
+   - 记录类型：`CNAME`
+   - 记录值：`<你的 GitHub 用户名>.github.io`（如 `dafei-python.github.io`）
+   - **Cloudflare 用户注意**：代理状态必须设为 **DNS only（灰云）**，不能开 Proxied，否则 GitHub Pages 自定义域名验证和 HTTPS 证书签发都会失败
 
-4. **手动触发一次 workflow**：GitHub 仓库 → Actions → Daily Rates Refresh → Run workflow。
+4. **等待证书签发**：5-10 分钟后 GitHub 自动签发 Let's Encrypt 证书。浏览器访问 `https://lilv.dafei-python.cn/rates.json` 看到 JSON 即成功。
 
-5. **拿到 Pages 地址**（如 `https://lilv.pages.dev/`），替换 `app/.../data/remote/NetworkProvider.kt` 中的 `BASE_URL`，重新打包。
+5. **手动触发一次 workflow 验证**：GitHub 仓库 → Actions → Daily Rates Refresh → Run workflow。等 1-2 分钟看到 ✓，再访问 `https://lilv.dafei-python.cn/rates.json` 确认数据已更新。
 
-之后每天北京时间 09:30 GitHub Actions 自动抓取并部署，无需人工干预。
+之后每天北京时间 09:30 GitHub Actions 自动抓取并 push 到 docs/rates.json，GitHub Pages 自动重新部署，无需人工干预。
 
 ## 替换公众号二维码
 

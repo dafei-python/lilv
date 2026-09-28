@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
  * 远端 rates.json 完整结构。
  *
  * 由 GitHub Actions 每日抓取央行/货币网/各行官网生成，
- * 部署在 Cloudflare Pages（如 https://lilv.pages.dev/rates.json）。
+ * 部署在 GitHub Pages（如 https://lilv.dafei-python.cn/rates.json）。
  */
 @Serializable
 data class RatesDto(
