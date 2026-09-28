@@ -41,8 +41,9 @@ jobs:
         run: python scripts/scraper.py
 
       - name: Commit changes
+        working-directory: ${{ github.workspace }}
         run: |
-          # 只有 docs/rates.json 变化时才提交
+          # 只有 docs/rates.json 变化时才提交（路径相对于仓库根，覆盖默认 working-directory）
           if git diff --quiet docs/rates.json; then
             echo "No changes, skip commit."
             exit 0
