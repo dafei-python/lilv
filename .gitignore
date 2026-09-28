@@ -1,0 +1,24 @@
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Gradle
+.gradle/
+build/
+local.properties
+*.iml
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# 数据管线（Python 虚拟环境）
+data-pipeline/.venv/
+data-pipeline/__pycache__/
+data-pipeline/*.pyc
+
+# 不要忽略生成的 rates.json（部署到 Cloudflare Pages 需要）
+!data-pipeline/public/rates.json

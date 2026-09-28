@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">利率速查</string>
+
+    <!-- 底部导航 -->
+    <string name="tab_deposit">存款</string>
+    <string name="tab_loan">贷款</string>
+    <string name="tab_calculator">计算器</string>
+    <string name="tab_about">关于</string>
+
+    <!-- 公共 -->
+    <string name="refresh">刷新</string>
+    <string name="last_updated">最近更新</string>
+    <string name="loading">加载中…</string>
+    <string name="load_failed">加载失败，点击重试</string>
+    <string name="not_available">暂无数据</string>
+    <string name="change_indicator">较上次</string>
+    <string name="no_change">无变动</string>
+
+    <!-- 存款 -->
+    <string name="deposit_title">存款利率</string>
+    <string name="deposit_subtitle">五大行 · 整存整取</string>
+    <string name="term_3m">3 月</string>
+    <string name="term_6m">6 月</string>
+    <string name="term_1y">1 年</string>
+    <string name="term_2y">2 年</string>
+    <string name="term_3y">3 年</string>
+    <string name="term_5y">5 年</string>
+
+    <!-- 贷款 -->
+    <string name="loan_title">贷款利率</string>
+    <string name="loan_lpr_section">LPR 贷款市场报价利率</string>
+    <string name="loan_fund_section">个人住房公积金贷款</string>
+    <string name="loan_mortgage_section">典型房贷参考</string>
+    <string name="loan_history_section">LPR 历史走势</string>
+    <string name="lpr_1y">1 年期</string>
+    <string name="lpr_5y">5 年期以上</string>
+    <string name="fund_5y_below">5 年以下（含）</string>
+    <string name="fund_5y_above">5 年以上</string>
+    <string name="fund_first">首套</string>
+    <string name="fund_second">二套</string>
+    <string name="mortgage_first">首套房贷</string>
+    <string name="mortgage_second">二套房贷</string>
+
+    <!-- 计算器 -->
+    <string name="calc_title">贷款计算器</string>
+    <string name="calc_amount">贷款金额（万元）</string>
+    <string name="calc_years">贷款年限（年）</string>
+    <string name="calc_rate">年利率（%）</string>
+    <string name="calc_method">还款方式</string>
+    <string name="calc_method_equal_interest">等额本息</string>
+    <string name="calc_method_equal_principal">等额本金</string>
+    <string name="calc_type_preset">利率预设</string>
+    <string name="calc_type_commercial">商业贷款</string>
+    <string name="calc_type_fund">公积金贷款</string>
+    <string name="calc_type_combined">组合贷</string>
+    <string name="calc_combined_fund_part">公积金部分（万元）</string>
+    <string name="calc_combined_commercial_part">商贷部分（万元）</string>
+    <string name="calc_result_monthly">月供</string>
+    <string name="calc_result_total_interest">总利息</string>
+    <string name="calc_result_total">还款总额</string>
+    <string name="calc_result_first_month">首月月供</string>
+    <string name="calc_result_decrease">每月递减</string>
+    <string name="calc_action">开始计算</string>
+
+    <!-- 关于 -->
+    <string name="about_title">关于</string>
+    <string name="about_app_name">利率速查</string>
+    <string name="about_version">版本 %1$s</string>
+    <string name="about_quote">"闲来翻《金钱心理学》，读到一句话：\n『花的比赚的少，余下的 invest 进未来。』\n\n于是有了这个小工具。"</string>
+    <string name="about_body">没有华丽的图表，没有眼花缭乱的指标。只把每天央行的利率、五大行的挂牌利率、公积金的最新调整，悄悄端到你面前。\n\n上下班地铁里、银行排队时、和父母聊到房贷的饭桌上——随时一查，便知金融大势的潮汐。\n\n这不是投资建议，只是一个普通的、对金融世界好奇的人，做的一点小事。</string>
+    <string name="about_wechat_title">扫码关注公众号</string>
+    <string name="about_wechat_subtitle">读书十页 · 数据 · 阅读 · 思考</string>
+    <string name="about_wechat_action">复制公众号名</string>
+    <string name="about_wechat_copied">已复制：读书十页</string>
+    <string name="about_disclaimer_title">免责声明</string>
+    <string name="about_disclaimer_body">本应用展示的利率数据均来自公开渠道（中国人民银行、全国银行间同业拆借中心、各商业银行官网），仅供参考。实际业务利率以银行柜面为准。本应用不构成任何投资建议。</string>
+    <string name="about_data_source_title">数据来源</string>
+    <string name="about_data_source_body">中国人民银行 · 全国银行间同业拆借中心（chinamoney.com.cn）\n工商银行 · 农业银行 · 中国银行 · 建设银行 · 邮储银行 官网\n每日自动更新，无需手动操作</string>
+    <string name="about_author">由 读书十页 出品</string>
+</resources>

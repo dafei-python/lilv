@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ic_launcher_foreground.xml
+  自适应图标前景层：金色边框钱币 + 白色上升趋势线 + 金色端点
+  方案 A：钱币 + 折线（金融感）
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 钱币外圈：金色边框 -->
+    <path
+        android:pathData="M54,54 m-26,0 a26,26 0 1,0 52,0 a26,26 0 1,0 -52,0"
+        android:strokeColor="#D4B074"
+        android:strokeWidth="4.5"
+        android:fillColor="#00000000" />
+
+    <!-- 钱币内圈：白色细线，制造钱币厚度感 -->
+    <path
+        android:pathData="M54,54 m-22,0 a22,22 0 1,0 44,0 a22,22 0 1,0 -44,0"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:fillColor="#00000000" />
+
+    <!-- 内部折线：从左下到右上的趋势线 -->
+    <path
+        android:pathData="M40,62 L48,55 L55,58 L62,47 L70,52"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+
+    <!-- 折线终点圆点：金色强调"增长" -->
+    <path
+        android:pathData="M70,52 m-2.8,0 a2.8,2.8 0 1,0 5.6,0 a2.8,2.8 0 1,0 -5.6,0"
+        android:fillColor="#D4B074" />
+</vector>

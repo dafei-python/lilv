@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 品牌主色：金融感深绿（钱币色），辅以金色 -->
+    <color name="brand_primary">#2E7D5B</color>
+    <color name="brand_primary_dark">#1F5C42</color>
+    <color name="brand_accent">#C9A86A</color>
+    <color name="brand_surface">#FAFAF7</color>
+    <color name="brand_on_surface">#1A1C1A</color>
+
+    <!-- 暗色 -->
+    <color name="brand_primary_night">#7DC9A6</color>
+    <color name="brand_surface_night">#101413</color>
+    <color name="brand_on_surface_night">#E8EBE8</color>
+
+    <!-- 启动屏背景 -->
+    <color name="splash_background">#FAFAF7</color>
+    <color name="splash_background_night">#101413</color>
+</resources>

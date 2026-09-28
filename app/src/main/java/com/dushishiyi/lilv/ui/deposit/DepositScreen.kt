@@ -1,0 +1,271 @@
+package com.dushishiyi.lilv.ui.deposit
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dushishiyi.lilv.R
+import com.dushishiyi.lilv.data.BankCatalog
+import com.dushishiyi.lilv.data.BankRatesDto
+import com.dushishiyi.lilv.data.DepositTerm
+import com.dushishiyi.lilv.data.RateChange
+import com.dushishiyi.lilv.ui.RatesViewModel
+import com.dushishiyi.lilv.ui.components.BankAvatar
+import com.dushishiyi.lilv.ui.components.ChangesBanner
+import com.dushishiyi.lilv.ui.components.RateDirection
+import com.dushishiyi.lilv.ui.components.RatePill
+import com.dushishiyi.lilv.ui.components.SectionHeader
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DepositScreen(viewModel: RatesViewModel) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+
+    var selectedTerm by remember { mutableStateOf(DepositTerm.T1Y) }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+    ) {
+        // 顶部标题栏
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 8.dp, top = 16.dp, bottom = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.deposit_title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        text = stringResource(R.string.deposit_subtitle),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                IconButton(onClick = { viewModel.refresh() }) {
+                    if (refreshing) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.width(24.dp).height(24.dp),
+                            strokeWidth = 2.dp,
+                        )
+                    } else {
+                        Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.refresh))
+                    }
+                }
+            }
+        }
+
+        when (val s = uiState) {
+            is RatesViewModel.UiState.Loading -> item {
+                LoadingState()
+            }
+            is RatesViewModel.UiState.Error -> item {
+                ErrorState(message = s.message, onRetry = { viewModel.refresh() })
+            }
+            is RatesViewModel.UiState.Success -> {
+                val data = s.data
+
+                // 更新时间
+                item {
+                    Text(
+                        text = "${stringResource(R.string.last_updated)}  ${s.fetchedAt}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    )
+                }
+
+                // 变动横幅
+                val depositChanges = s.changes.filter { it.scope == "deposit" }
+                if (depositChanges.isNotEmpty()) {
+                    item { ChangesBanner(changes = depositChanges) }
+                }
+
+                // 期限 Chip 横向滚动
+                item {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(DepositTerm.all, key = { it.key }) { term ->
+                            FilterChip(
+                                selected = selectedTerm == term,
+                                onClick = { selectedTerm = term },
+                                label = { Text(term.label) },
+                            )
+                        }
+                    }
+                }
+
+                // 银行利率列表
+                val changeMap = depositChanges.associateBy { it.title }
+                items(data.deposit.banks, key = { it.code }) { bank ->
+                    DepositBankRow(
+                        bank = bank,
+                        term = selectedTerm,
+                        change = findChange(changeMap, bank, selectedTerm),
+                    )
+                }
+
+                // 末尾说明
+                item {
+                    Text(
+                        text = "数据来自各行官网人民币存款利率表\n实际业务利率以银行柜面为准",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DepositBankRow(
+    bank: BankRatesDto,
+    term: DepositTerm,
+    change: RateChange?,
+) {
+    val meta = BankCatalog.byCode(bank.code)
+    val rate = term.dtoSelector(bank.rates)
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            if (meta != null) BankAvatar(meta)
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = meta?.shortName ?: bank.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = "挂牌 ${bank.updatedAt}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            Text(
+                text = "%.2f%%".format(rate),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            if (change != null) {
+                RatePill(
+                    text = change.formatDiff(),
+                    direction = when {
+                        change.isRaised -> RateDirection.UP
+                        change.isLowered -> RateDirection.DOWN
+                        else -> RateDirection.NEUTRAL
+                    },
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.no_change),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+        }
+    }
+}
+
+private fun findChange(
+    map: Map<String, RateChange>,
+    bank: BankRatesDto,
+    term: DepositTerm,
+): RateChange? {
+    val meta = BankCatalog.byCode(bank.code) ?: return null
+    val key = "${meta.shortName} ${term.label}"
+    return map[key]
+}
+
+@Composable
+private fun LoadingState() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(48.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun ErrorState(message: String, onRetry: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+        )
+        TextButton(onClick = onRetry) {
+            Text(stringResource(R.string.refresh))
+        }
+    }
+}

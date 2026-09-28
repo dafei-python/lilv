@@ -1,0 +1,113 @@
+{
+  "generatedAt": "2026-09-28T09:30:00+08:00",
+  "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网",
+  "deposit": {
+    "banks": [
+      {
+        "code": "icbc",
+        "name": "中国工商银行",
+        "updatedAt": "2025-05-20",
+        "rates": {
+          "demand": 0.05,
+          "term3m": 0.65,
+          "term6m": 0.85,
+          "term1y": 0.95,
+          "term2y": 1.05,
+          "term3y": 1.25,
+          "term5y": 1.30
+        }
+      },
+      {
+        "code": "abc",
+        "name": "中国农业银行",
+        "updatedAt": "2025-05-20",
+        "rates": {
+          "demand": 0.05,
+          "term3m": 0.65,
+          "term6m": 0.85,
+          "term1y": 0.95,
+          "term2y": 1.05,
+          "term3y": 1.25,
+          "term5y": 1.30
+        }
+      },
+      {
+        "code": "boc",
+        "name": "中国银行",
+        "updatedAt": "2025-05-20",
+        "rates": {
+          "demand": 0.05,
+          "term3m": 0.65,
+          "term6m": 0.85,
+          "term1y": 0.95,
+          "term2y": 1.05,
+          "term3y": 1.25,
+          "term5y": 1.30
+        }
+      },
+      {
+        "code": "ccb",
+        "name": "中国建设银行",
+        "updatedAt": "2025-05-20",
+        "rates": {
+          "demand": 0.05,
+          "term3m": 0.65,
+          "term6m": 0.85,
+          "term1y": 0.95,
+          "term2y": 1.05,
+          "term3y": 1.25,
+          "term5y": 1.30
+        }
+      },
+      {
+        "code": "psbc",
+        "name": "中国邮政储蓄银行",
+        "updatedAt": "2025-05-20",
+        "rates": {
+          "demand": 0.05,
+          "term3m": 0.65,
+          "term6m": 0.85,
+          "term1y": 0.95,
+          "term2y": 1.05,
+          "term3y": 1.25,
+          "term5y": 1.30
+        }
+      }
+    ]
+  },
+  "lpr": {
+    "current": {
+      "date": "2026-09-20",
+      "lpr1y": 3.00,
+      "lpr5y": 3.50
+    },
+    "history": [
+      { "date": "2026-09-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-08-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-07-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-06-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-05-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-04-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-03-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-02-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2026-01-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2025-12-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2025-11-20", "lpr1y": 3.00, "lpr5y": 3.50 },
+      { "date": "2025-10-20", "lpr1y": 3.00, "lpr5y": 3.50 }
+    ]
+  },
+  "fund": {
+    "first5yBelow": 2.10,
+    "first5yAbove": 2.60,
+    "second5yBelow": 2.525,
+    "second5yAbove": 3.075,
+    "effectiveSince": "2025-05-08"
+  },
+  "mortgageReference": {
+    "firstFloorMin": 3.05,
+    "firstFloorMax": 3.30,
+    "secondFloorMin": 3.30,
+    "secondFloorMax": 3.60,
+    "note": "首套房贷执行利率 ≈ LPR-45BP（参考城市：上海、北京等一线城市）"
+  }
+}
