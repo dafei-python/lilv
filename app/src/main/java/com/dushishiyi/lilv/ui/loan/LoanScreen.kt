@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,7 +34,6 @@ import com.dushishiyi.lilv.R
 import com.dushishiyi.lilv.ui.RatesViewModel
 import com.dushishiyi.lilv.ui.components.ChangesBanner
 import com.dushishiyi.lilv.ui.components.SectionHeader
-import com.dushishiyi.lilv.ui.components.SimpleLineChart
 
 @Composable
 fun LoanScreen(viewModel: RatesViewModel) {
@@ -52,18 +53,11 @@ fun LoanScreen(viewModel: RatesViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.loan_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Text(
-                        text = "央行 LPR · 公积金贷款",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.loan_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 IconButton(onClick = { viewModel.refresh() }) {
                     if (refreshing) {
                         CircularProgressIndicator(
@@ -110,7 +104,7 @@ fun LoanScreen(viewModel: RatesViewModel) {
                     item { ChangesBanner(changes = loanChanges) }
                 }
 
-                // LPR 当前值
+                // ===== LPR 模块 =====
                 item { SectionHeader(stringResource(R.string.loan_lpr_section), subtitle = "${data.lpr.current.date} 公布") }
                 item {
                     Row(
@@ -131,78 +125,41 @@ fun LoanScreen(viewModel: RatesViewModel) {
                         )
                     }
                 }
-
-                // LPR 历史走势
-                item { SectionHeader(stringResource(R.string.loan_history_section), subtitle = "近 ${data.lpr.history.size} 期") }
-                item {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 1.dp,
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            val series1y = data.lpr.history.map { it.lpr1y.toFloat() }.reversed()
-                            val series5y = data.lpr.history.map { it.lpr5y.toFloat() }.reversed()
-                            SimpleLineChart(points = series5y)
-                            Text(
-                                text = "5 年期 LPR 走势",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 4.dp, start = 4.dp),
-                            )
-                        }
-                    }
-                }
-
-                // 公积金贷款
-                item { SectionHeader(stringResource(R.string.loan_fund_section), subtitle = "${data.fund.effectiveSince} 起执行") }
-                item {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 1.dp,
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            FundRow(stringResource(R.string.fund_first), data.fund.first5yBelow, data.fund.first5yAbove)
-                            FundRow(stringResource(R.string.fund_second), data.fund.second5yBelow, data.fund.second5yAbove)
-                        }
-                    }
-                }
-
-                // 典型房贷参考
-                item { SectionHeader(stringResource(R.string.loan_mortgage_section)) }
-                item {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 1.dp,
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            MortgageRow(stringResource(R.string.mortgage_first), data.mortgageReference.firstFloorMin, data.mortgageReference.firstFloorMax)
-                            MortgageRow(stringResource(R.string.mortgage_second), data.mortgageReference.secondFloorMin, data.mortgageReference.secondFloorMax)
-                            Text(
-                                text = data.mortgageReference.note,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 8.dp),
-                            )
-                        }
-                    }
-                }
-
+                // LPR 小字提示（紧跟 LPR 模块，灰色不显眼）
                 item {
                     Text(
-                        text = "LPR 每月 20 日公布（遇节假日顺延）。LPR 是基准利率，实际执行利率 = LPR ± 基点，各银行、各城市加点不同。",
+                        text = "LPR 每月 20 日公布（遇节假日顺延）。实际执行利率 = LPR ± 基点，各银行、各城市加点不同。",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                     )
+                }
+
+                // ===== 公积金贷款模块 =====
+                item { Spacer(Modifier.height(8.dp)) }
+                item { SectionHeader(stringResource(R.string.loan_fund_section), subtitle = "${data.fund.effectiveSince} 起执行") }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        FundGroup(
+                            title = stringResource(R.string.fund_first),
+                            below = data.fund.first5yBelow,
+                            above = data.fund.first5yAbove,
+                            highlight = true,
+                            modifier = Modifier.weight(1f),
+                        )
+                        FundGroup(
+                            title = stringResource(R.string.fund_second),
+                            below = data.fund.second5yBelow,
+                            above = data.fund.second5yAbove,
+                            highlight = false,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
             }
         }
@@ -236,52 +193,56 @@ private fun LprCard(title: String, value: Double, modifier: Modifier = Modifier)
     }
 }
 
+/**
+ * 公积金首套/二套对比卡：标签 + 5年以下/5年以上两档利率大数字。
+ * highlight=true（首套）用主题色底突出，二套用中性色底。
+ */
 @Composable
-private fun FundRow(name: String, below: Double, above: Double) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+private fun FundGroup(
+    title: String,
+    below: Double,
+    above: Double,
+    highlight: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val bg = if (highlight) {
+        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+    }
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        color = bg,
     ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-        )
-        Text(
-            text = "5 年以下 %.3f%%".format(below),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1.2f),
-        )
-        Text(
-            text = "5 年以上 %.3f%%".format(above),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1.2f),
-        )
+        Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.height(10.dp))
+            FundRateLine(label = stringResource(R.string.fund_5y_below), value = below)
+            Spacer(Modifier.height(8.dp))
+            FundRateLine(label = stringResource(R.string.fund_5y_above), value = above)
+        }
     }
 }
 
 @Composable
-private fun MortgageRow(name: String, min: Double, max: Double) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
+private fun FundRateLine(label: String, value: Double) {
+    Column {
         Text(
-            text = name,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = "%.2f%% ~ %.2f%%".format(min, max),
-            style = MaterialTheme.typography.titleMedium,
+            text = "%.3f%%".format(value),
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1.5f),
         )
     }
 }

@@ -33,16 +33,12 @@
     <string name="loan_title">贷款利率</string>
     <string name="loan_lpr_section">LPR 贷款市场报价利率</string>
     <string name="loan_fund_section">个人住房公积金贷款</string>
-    <string name="loan_mortgage_section">典型房贷参考</string>
-    <string name="loan_history_section">LPR 历史走势</string>
     <string name="lpr_1y">1 年期</string>
     <string name="lpr_5y">5 年期以上</string>
     <string name="fund_5y_below">5 年以下（含）</string>
     <string name="fund_5y_above">5 年以上</string>
     <string name="fund_first">首套</string>
     <string name="fund_second">二套</string>
-    <string name="mortgage_first">首套房贷</string>
-    <string name="mortgage_second">二套房贷</string>
 
     <!-- 计算器 -->
     <string name="calc_title">贷款计算器</string>
