@@ -62,8 +62,15 @@
     <string name="calc_result_total_interest">总利息</string>
     <string name="calc_result_total">还款总额</string>
     <string name="calc_result_first_month">首月月供</string>
+    <string name="calc_result_last_month">末月月供</string>
     <string name="calc_result_decrease">每月递减</string>
     <string name="calc_action">开始计算</string>
+    <string name="calc_schedule_title">每期还款明细</string>
+    <string name="calc_schedule_index">期次</string>
+    <string name="calc_schedule_payment">月供</string>
+    <string name="calc_schedule_principal">本金</string>
+    <string name="calc_schedule_interest">利息</string>
+    <string name="calc_schedule_remaining">剩余本金</string>
 
     <!-- 关于 -->
     <string name="about_title">关于</string>
