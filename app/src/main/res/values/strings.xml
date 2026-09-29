@@ -22,6 +22,18 @@
     <string name="deposit_term_hint">整存整取</string>
     <string name="deposit_adjust_hint">五大行挂牌利率基本同步调整，近年间隔约 3～6 个月</string>
     <string name="deposit_top_rate">最高</string>
+
+    <!-- 其他资产回报参考 -->
+    <string name="reference_title">其他资产回报参考</string>
+    <string name="reference_deposit1y">存款 1 年定存</string>
+    <string name="reference_treasury10y">10 年期国债</string>
+    <string name="reference_insurance">寿险预定利率上限</string>
+    <string name="reference_wealth">理财平均年化</string>
+    <string name="reference_csi300">沪深 300 近 10 年年化</string>
+    <string name="reference_risk_low">低风险</string>
+    <string name="reference_risk_ml">中低风险</string>
+    <string name="reference_risk_mh">中高风险</string>
+    <string name="reference_note_prefix">数据说明</string>
     <string name="term_3m">3 月</string>
     <string name="term_6m">6 月</string>
     <string name="term_1y">1 年</string>

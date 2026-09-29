@@ -51,6 +51,7 @@ import com.dushishiyi.lilv.ui.components.BankAvatar
 import com.dushishiyi.lilv.ui.components.ChangesBanner
 import com.dushishiyi.lilv.ui.components.RateDirection
 import com.dushishiyi.lilv.ui.components.RatePill
+import com.dushishiyi.lilv.ui.components.ReferenceCard
 import com.dushishiyi.lilv.ui.components.SectionHeader
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -194,6 +195,11 @@ fun DepositScreen(viewModel: RatesViewModel) {
                         color = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                     )
+                }
+
+                // 其他资产回报参考（可折叠卡片）
+                data.reference?.let { ref ->
+                    item { ReferenceCard(reference = ref) }
                 }
             }
         }

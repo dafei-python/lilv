@@ -157,5 +157,14 @@
     "secondFloorMin": 3.25,
     "secondFloorMax": 3.45,
     "note": "首套房贷执行利率 ≈ LPR-45BP（参考城市：上海、北京等一线城市）"
+  },
+  "reference": {
+    "deposit1y": 0.95,
+    "treasury10y": 2.15,
+    "insuranceCap": 2.50,
+    "wealthManagement": 3.00,
+    "csi300_10y_annualized": 6.20,
+    "updatedDescription": "国债/股票每日自动；理财/保险为参考值（半年人工检查）",
+    "updatedAt": "2026-09-29"
   }
 }

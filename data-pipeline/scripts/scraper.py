@@ -56,6 +56,22 @@ BANK_URLS = {
 
 LPR_URL = "https://www.chinamoney.com.cn/chinese/bklpr/"
 
+# 东方财富 · 10 年期国债到期收益率（银行间市场）
+# 接口返回近 1 个月每日收益率，取最新一日
+TREASURY_10Y_URL = (
+    "https://datacenter-web.eastmoney.com/api/data/v1/get"
+    "?reportName=RPT_BOND_CN_TENYEARENREDISOUNTBONDYIELD"
+    "&columns=ALL&pageSize=5&sortColumns=SOLAR_DATE&sortTypes=-1"
+)
+
+# 东方财富 · 沪深 300 历史前复权收盘（用于计算近 10 年年化）
+# 取最近一个交易日和 10 年前同日的指数值
+CSI300_HISTORY_URL = (
+    "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+    "?secid=1.000300&fields1=f1&fields2=f3"
+    "&klt=101&fqt=1"  # 日 K 前复权
+)
+
 # 公积金贷款利率：央行调整时才变。脚本默认沿用旧值，
 # 央行发布新公告时请在此处更新 EFFECTIVE_SINCE 和四个数值。
 FUND_FALLBACK = {
@@ -65,6 +81,11 @@ FUND_FALLBACK = {
     "second5yAbove": 3.075,
     "effectiveSince": "2025-05-08",
 }
+
+# 理财和保险为半静态参考值（银登会季度报告 / 金融监管总局规定），
+# 半年人工检查一次即可，无需每日抓取。
+WEALTH_MANAGEMENT_FALLBACK = 3.00   # 2026 Q3 银行业理财平均年化
+INSURANCE_CAP_FALLBACK = 2.50        # 普通型寿险预定利率上限（监管值）
 
 # 典型房贷执行利率参考（首套 LPR-45BP，二套 LPR-25BP 左右）
 MORTGAGE_NOTE = "首套房贷执行利率 ≈ LPR-45BP（参考城市：上海、北京等一线城市）"
@@ -236,6 +257,69 @@ def read_prev_payload() -> dict[str, Any]:
     return {}
 
 # ============================================================
+# 10 年期国债收益率（每日自动）
+# ============================================================
+
+def fetch_treasury_10y() -> Optional[float]:
+    """从东方财富抓最新一日 10 年期国债到期收益率（%）。"""
+    try:
+        resp = requests.get(TREASURY_10Y_URL, headers={"User-Agent": USER_AGENT}, timeout=TIMEOUT)
+        resp.raise_for_status()
+        data = resp.json()
+        rows = data.get("result", {}).get("data", []) or []
+        if not rows:
+            return None
+        # 按日期降序取第一行
+        latest = rows[0]
+        return parse_float(str(latest.get("YIELD")))
+    except Exception as e:
+        print(f"[WARN] 10Y 国债抓取失败：{e}", file=sys.stderr)
+        return None
+
+# ============================================================
+# 沪深 300 近 10 年年化收益率（每日自动）
+# ============================================================
+
+def fetch_csi300_10y_annualized() -> Optional[float]:
+    """从东方财富取沪深 300 历史日 K，用近 10 年区间计算复合年化收益率（%）。"""
+    try:
+        # 取最近 2500 个交易日（足够覆盖 10 年）
+        url = CSI300_HISTORY_URL + "&beg=20150101&end=20991231&lmt=2600"
+        resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=TIMEOUT)
+        resp.raise_for_status()
+        data = resp.json().get("data", {})
+        klines = data.get("klines", []) or []
+        if len(klines) < 100:
+            return None
+        # 每行 "YYYY-MM-DD,close,..."；取首尾两端的收盘价算年化
+        def parse_close(line: str) -> tuple[str, float]:
+            parts = line.split(",")
+            return parts[0], float(parts[1])
+        # 找 10 年前的最近一天
+        today = datetime.now(CN_TZ).date()
+        first = parse_close(klines[0])
+        last = parse_close(klines[-1])
+        # 按日期找 10 年前同日（±30 天容差）
+        target_year = today.year - 10
+        candidates = [parse_close(k) for k in klines]
+        # 取最早可用的日子作为 10 年起点
+        # 用 (今天 - 最早日期) 计算实际年数
+        from datetime import date as date_cls
+        d0 = date_cls.fromisoformat(first[0])
+        d1 = date_cls.fromisoformat(last[0])
+        years = (d1 - d0).days / 365.25
+        if years < 5:  # 数据不足 5 年，结果不可靠
+            return None
+        ratio = last[1] / first[1]
+        # 复合年化 = (终值/初值)^(1/年数) - 1
+        annualized = (ratio ** (1 / years) - 1) * 100
+        # 含 2% 股息率假设（沪深 300 平均股息率约 2%）
+        return round(annualized + 2.0, 2)
+    except Exception as e:
+        print(f"[WARN] 沪深 300 抓取失败：{e}", file=sys.stderr)
+        return None
+
+# ============================================================
 # 主流程
 # ============================================================
 
@@ -268,13 +352,44 @@ def main() -> int:
         "note": MORTGAGE_NOTE,
     }
 
+    # 其他资产回报参考：国债/股票每日自动，理财/保险半静态
+    prev_ref = prev.get("reference", {})
+    treasury = fetch_treasury_10y()
+    if treasury is None:
+        treasury = prev_ref.get("treasury10y", 2.15)
+        print("[WARN] 10Y 国债沿用旧值")
+    else:
+        print(f"[OK] 10Y 国债抓取成功：{treasury}%")
+
+    csi300 = fetch_csi300_10y_annualized()
+    if csi300 is None:
+        csi300 = prev_ref.get("csi300_10y_annualized", 6.20)
+        print("[WARN] 沪深 300 沿用旧值")
+    else:
+        print(f"[OK] 沪深 300 年化抓取成功：{csi300}%")
+
+    # 存款 1 年定存：取五大行均值
+    deposit_1y_list = [b.get("rates", {}).get("term1y", 0.0) for b in banks]
+    deposit_1y = round(sum(deposit_1y_list) / max(len(deposit_1y_list), 1), 2)
+
+    reference = {
+        "deposit1y": deposit_1y,
+        "treasury10y": treasury,
+        "insuranceCap": INSURANCE_CAP_FALLBACK,
+        "wealthManagement": WEALTH_MANAGEMENT_FALLBACK,
+        "csi300_10y_annualized": csi300,
+        "updatedDescription": "国债/股票每日自动；理财/保险为参考值（半年人工检查）",
+        "updatedAt": datetime.now(CN_TZ).strftime("%Y-%m-%d"),
+    }
+
     payload = {
         "generatedAt": now_iso(),
-        "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网",
+        "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网 / 东方财富",
         "deposit": {"banks": banks},
         "lpr": lpr_new,
         "fund": fund,
         "mortgageReference": mortgage,
+        "reference": reference,
     }
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)

@@ -16,6 +16,7 @@ data class RatesDto(
     val lpr: LprSection,
     val fund: FundSection,
     val mortgageReference: MortgageReferenceSection,
+    val reference: ReferenceSection? = null,
 )
 
 @Serializable
@@ -71,4 +72,20 @@ data class MortgageReferenceSection(
     val secondFloorMin: Double,
     val secondFloorMax: Double,
     val note: String,
+)
+
+/**
+ * 其他资产回报参考（存款页底部对比模块）。
+ * - 国债/股票每日自动更新
+ * - 理财/保险为半静态参考值
+ */
+@Serializable
+data class ReferenceSection(
+    val deposit1y: Double,                 // 五大行 1 年定存均值（自动）
+    val treasury10y: Double,               // 10 年期国债到期收益率（每日自动）
+    val insuranceCap: Double,              // 普通型寿险预定利率上限（监管值）
+    val wealthManagement: Double,          // 银行业理财平均年化（半静态）
+    val csi300_10y_annualized: Double,     // 沪深 300 近 10 年年化（每日自动）
+    val updatedDescription: String = "",
+    val updatedAt: String = "",
 )
