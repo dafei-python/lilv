@@ -191,13 +191,6 @@ fun AboutScreen() {
             body = stringResource(R.string.about_disclaimer_body),
         )
 
-        Spacer(Modifier.height(24.dp))
-
-        Text(
-            text = stringResource(R.string.about_author),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 

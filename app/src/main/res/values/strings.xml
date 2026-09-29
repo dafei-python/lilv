@@ -71,7 +71,7 @@
     <!-- 关于 -->
     <string name="about_title">关于</string>
     <string name="about_app_name">利率速查</string>
-    <string name="about_version">版本 %1$s</string>
+    <string name="about_version">版本 v%1$s</string>
     <string name="about_quote">"闲来翻《金钱心理学》，读到一句话：\n『花的比赚的少，余下的 invest 进未来。』\n\n于是有了这个小工具。"</string>
     <string name="about_body">没有华丽的图表，没有眼花缭乱的指标。只把每天央行的利率、五大行的挂牌利率、公积金的最新调整，悄悄端到你面前。\n\n上下班地铁里、银行排队时、和父母聊到房贷的饭桌上——随时一查，便知金融大势的潮汐。\n\n这不是投资建议，只是一个普通的、对金融世界好奇的人，做的一点小事。</string>
     <string name="about_wechat_title">扫码关注公众号</string>
@@ -82,5 +82,4 @@
     <string name="about_disclaimer_body">本应用展示的利率数据均来自公开渠道（中国人民银行、全国银行间同业拆借中心、各商业银行官网），仅供参考。实际业务利率以银行柜面为准。本应用不构成任何投资建议。</string>
     <string name="about_data_source_title">数据来源</string>
     <string name="about_data_source_body">中国人民银行 · 全国银行间同业拆借中心（chinamoney.com.cn）\n工商银行 · 农业银行 · 中国银行 · 建设银行 · 邮储银行 官网\n每日自动更新，无需手动操作</string>
-    <string name="about_author">由 读书十页 出品</string>
 </resources>
