@@ -53,24 +53,6 @@ fun AboutScreen() {
             .padding(top = 24.dp, bottom = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // 应用图标（用前景图层）
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.primary),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.QrCode2,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(48.dp),
-            )
-        }
-
-        Spacer(Modifier.height(12.dp))
-
         Text(
             text = stringResource(R.string.about_app_name),
             style = MaterialTheme.typography.headlineMedium,
