@@ -131,12 +131,12 @@ fun LoanScreen(viewModel: RatesViewModel) {
                         text = "LPR 每月 20 日公布（遇节假日顺延）。实际执行利率 = LPR ± 基点，各银行、各城市加点不同。",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
 
-                // ===== 公积金贷款模块 =====
-                item { Spacer(Modifier.height(8.dp)) }
+                // ===== 公积金贷款模块（与上方 LPR 模块拉开间距）=====
+                item { Spacer(Modifier.height(20.dp)) }
                 item { SectionHeader(stringResource(R.string.loan_fund_section), subtitle = "${data.fund.effectiveSince} 起执行") }
                 item {
                     Row(
