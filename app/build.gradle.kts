@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,10 +23,27 @@ android {
         vectorDrawables { useSupportLibrary = true }
     }
 
+    // Release 签名（keystore.properties 见项目根，勿上传 git）
+    val keystoreProps = Properties().apply {
+        val f = rootProject.file("keystore.properties")
+        if (f.exists()) f.inputStream().use { load(it) }
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProps.getProperty("keyAlias")
+            keyPassword = keystoreProps.getProperty("keyPassword")
+            storeFile = keystoreProps.getProperty("storeFile")?.let { rootProject.file(it) }
+            storePassword = keystoreProps.getProperty("storePassword")
+        }
+    }
+
     buildTypes {
         release {
-            // 自用+分享 APK，使用 debug 签名也无所谓；如需混淆可开启
-            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+            // R8 混淆 + 资源压缩：体积更小、运行更快
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

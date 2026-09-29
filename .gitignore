@@ -21,3 +21,7 @@ data-pipeline/__pycache__/
 data-pipeline/*.pyc
 
 # docs/ 是 GitHub Pages 发布目录，rates.json 由 Actions 每天写入并 commit
+
+# Release 签名（勿上传，丢失将无法更新 APP）
+keystore/
+keystore.properties
