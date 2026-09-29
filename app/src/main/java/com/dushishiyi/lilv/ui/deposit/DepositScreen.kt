@@ -138,20 +138,7 @@ fun DepositScreen(viewModel: RatesViewModel) {
                     )
                 }
 
-                // 整存整取提示（+ 合并的挂牌日期）
-                item {
-                    val hint = if (showRowDate) {
-                        stringResource(R.string.deposit_term_hint)
-                    } else {
-                        "${stringResource(R.string.deposit_term_hint)} · 挂牌 ${listingDates.firstOrNull().orEmpty()}"
-                    }
-                    Text(
-                        text = hint,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                }
+
 
                 // 变动横幅
                 val depositChanges = s.changes.filter { it.scope == "deposit" }
@@ -173,6 +160,14 @@ fun DepositScreen(viewModel: RatesViewModel) {
                             )
                         }
                     }
+                }
+
+                // 存款类型标签（左）+ 挂牌日期（右对齐，同贷款页 SectionHeader 风格）
+                item {
+                    SectionHeader(
+                        title = stringResource(R.string.deposit_term_hint),
+                        subtitle = if (showRowDate) null else "挂牌 ${listingDates.firstOrNull().orEmpty()}",
+                    )
                 }
 
                 // 银行利率列表：按当前期限利率降序；唯一最高者显示「最高」标记
