@@ -146,6 +146,14 @@ fun DepositScreen(viewModel: RatesViewModel) {
                     item { ChangesBanner(changes = depositChanges) }
                 }
 
+                // 存款类型标签（左）+ 挂牌日期（右对齐，同贷款页 SectionHeader 风格）
+                item {
+                    SectionHeader(
+                        title = stringResource(R.string.deposit_term_hint),
+                        subtitle = if (showRowDate) null else "挂牌 ${listingDates.firstOrNull().orEmpty()}",
+                    )
+                }
+
                 // 期限 Chip 横向滚动
                 item {
                     LazyRow(
@@ -160,14 +168,6 @@ fun DepositScreen(viewModel: RatesViewModel) {
                             )
                         }
                     }
-                }
-
-                // 存款类型标签（左）+ 挂牌日期（右对齐，同贷款页 SectionHeader 风格）
-                item {
-                    SectionHeader(
-                        title = stringResource(R.string.deposit_term_hint),
-                        subtitle = if (showRowDate) null else "挂牌 ${listingDates.firstOrNull().orEmpty()}",
-                    )
                 }
 
                 // 银行利率列表：按当前期限利率降序；唯一最高者显示「最高」标记
