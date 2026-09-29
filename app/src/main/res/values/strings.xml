@@ -19,7 +19,8 @@
 
     <!-- 存款 -->
     <string name="deposit_title">存款利率</string>
-    <string name="deposit_subtitle">五大行 · 整存整取</string>
+    <string name="deposit_term_hint">整存整取</string>
+    <string name="deposit_adjust_hint">五大行挂牌利率基本同步调整，近年间隔约 3～6 个月</string>
     <string name="term_3m">3 月</string>
     <string name="term_6m">6 月</string>
     <string name="term_1y">1 年</string>

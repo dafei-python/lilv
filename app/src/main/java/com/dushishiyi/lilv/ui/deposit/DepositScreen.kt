@@ -73,18 +73,11 @@ fun DepositScreen(viewModel: RatesViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.deposit_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Text(
-                        text = stringResource(R.string.deposit_subtitle),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.deposit_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
                 IconButton(onClick = { viewModel.refresh() }) {
                     if (refreshing) {
                         CircularProgressIndicator(
@@ -107,6 +100,9 @@ fun DepositScreen(viewModel: RatesViewModel) {
             }
             is RatesViewModel.UiState.Success -> {
                 val data = s.data
+                // 五大行挂牌日期通常一致；一致时合并展示，避免每行重复
+                val listingDates = data.deposit.banks.map { it.updatedAt }.distinct()
+                val showRowDate = listingDates.size > 1
 
                 // 更新时间
                 item {
@@ -115,6 +111,21 @@ fun DepositScreen(viewModel: RatesViewModel) {
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    )
+                }
+
+                // 整存整取提示（+ 合并的挂牌日期）
+                item {
+                    val hint = if (showRowDate) {
+                        stringResource(R.string.deposit_term_hint)
+                    } else {
+                        "${stringResource(R.string.deposit_term_hint)} · 挂牌 ${listingDates.firstOrNull().orEmpty()}"
+                    }
+                    Text(
+                        text = hint,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
 
@@ -147,16 +158,17 @@ fun DepositScreen(viewModel: RatesViewModel) {
                         bank = bank,
                         term = selectedTerm,
                         change = findChange(changeMap, bank, selectedTerm),
+                        showDate = showRowDate,
                     )
                 }
 
-                // 末尾说明
+                // 利率调整间隔提示（小字，不显眼）
                 item {
                     Text(
-                        text = "数据来自各行官网人民币存款利率表\n实际业务利率以银行柜面为准",
+                        text = stringResource(R.string.deposit_adjust_hint),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                     )
                 }
             }
@@ -169,6 +181,7 @@ private fun DepositBankRow(
     bank: BankRatesDto,
     term: DepositTerm,
     change: RateChange?,
+    showDate: Boolean,
 ) {
     val meta = BankCatalog.byCode(bank.code)
     val rate = term.dtoSelector(bank.rates)
@@ -194,11 +207,13 @@ private fun DepositBankRow(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
                 )
-                Text(
-                    text = "挂牌 ${bank.updatedAt}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                if (showDate) {
+                    Text(
+                        text = "挂牌 ${bank.updatedAt}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
 
             Text(
