@@ -1,11 +1,11 @@
 package com.dushishiyi.lilv.ui.deposit
 
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,11 +30,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,9 +60,31 @@ fun DepositScreen(viewModel: RatesViewModel) {
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
 
     var selectedTerm by remember { mutableStateOf(DepositTerm.T1Y) }
+    // 横向滑动切换期限：左滑→更长期限，右滑→更短期限
+    var dragAccum by remember { mutableFloatStateOf(0f) }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onHorizontalDrag = { change, delta ->
+                        dragAccum += delta
+                        change.consume()
+                    },
+                    onDragEnd = {
+                        val terms = DepositTerm.all
+                        val idx = terms.indexOf(selectedTerm)
+                        if (dragAccum < -120f && idx < terms.lastIndex) {
+                            selectedTerm = terms[idx + 1]
+                        } else if (dragAccum > 120f && idx > 0) {
+                            selectedTerm = terms[idx - 1]
+                        }
+                        dragAccum = 0f
+                    },
+                    onDragCancel = { dragAccum = 0f },
+                )
+            },
         contentPadding = PaddingValues(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
@@ -151,14 +175,19 @@ fun DepositScreen(viewModel: RatesViewModel) {
                     }
                 }
 
-                // 银行利率列表
+                // 银行利率列表：按当前期限利率降序；唯一最高者显示「最高」标记
                 val changeMap = depositChanges.associateBy { it.title }
-                items(data.deposit.banks, key = { it.code }) { bank ->
+                val sortedBanks = data.deposit.banks
+                    .sortedByDescending { selectedTerm.dtoSelector(it.rates) }
+                val maxRate = sortedBanks.maxOfOrNull { selectedTerm.dtoSelector(it.rates) }
+                val maxCount = sortedBanks.count { selectedTerm.dtoSelector(it.rates) == maxRate }
+                items(sortedBanks, key = { it.code }) { bank ->
                     DepositBankRow(
                         bank = bank,
                         term = selectedTerm,
                         change = findChange(changeMap, bank, selectedTerm),
                         showDate = showRowDate,
+                        isTop = maxCount == 1 && selectedTerm.dtoSelector(bank.rates) == maxRate,
                     )
                 }
 
@@ -182,6 +211,7 @@ private fun DepositBankRow(
     term: DepositTerm,
     change: RateChange?,
     showDate: Boolean,
+    isTop: Boolean,
 ) {
     val meta = BankCatalog.byCode(bank.code)
     val rate = term.dtoSelector(bank.rates)
@@ -202,11 +232,27 @@ private fun DepositBankRow(
             if (meta != null) BankAvatar(meta)
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = meta?.shortName ?: bank.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = meta?.shortName ?: bank.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium,
+                    )
+                    if (isTop) {
+                        Surface(
+                            modifier = Modifier.padding(start = 6.dp),
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.deposit_top_rate),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                            )
+                        }
+                    }
+                }
                 if (showDate) {
                     Text(
                         text = "挂牌 ${bank.updatedAt}",
