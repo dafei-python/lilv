@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-29T15:13:33+08:00",
-  "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网",
+  "generatedAt": "2026-09-30T15:03:19+08:00",
+  "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网 / 东方财富",
   "deposit": {
     "banks": [
       {
@@ -161,10 +161,10 @@
   "reference": {
     "deposit1y": 0.95,
     "treasury10y": 2.15,
-    "insuranceCap": 2.50,
-    "wealthManagement": 3.00,
-    "csi300_10y_annualized": 6.20,
+    "insuranceCap": 2.5,
+    "wealthManagement": 3.0,
+    "csi300_10y_annualized": 6.2,
     "updatedDescription": "国债/股票每日自动；理财/保险为参考值（半年人工检查）",
-    "updatedAt": "2026-09-29"
+    "updatedAt": "2026-09-30"
   }
 }
