@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-28T09:30:00+08:00",
-  "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网",
+  "generatedAt": "2026-10-01T11:29:28+08:00",
+  "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网 / 东方财富",
   "deposit": {
     "banks": [
       {
@@ -14,7 +14,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
@@ -28,7 +28,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
@@ -42,7 +42,7 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
@@ -56,21 +56,21 @@
           "term1y": 0.95,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3
         }
       },
       {
         "code": "psbc",
         "name": "中国邮政储蓄银行",
-        "updatedAt": "2025-05-20",
+        "updatedAt": "2026-10-01",
         "rates": {
-          "demand": 0.05,
           "term3m": 0.65,
-          "term6m": 0.85,
-          "term1y": 0.95,
+          "term6m": 0.86,
+          "term1y": 0.98,
           "term2y": 1.05,
           "term3y": 1.25,
-          "term5y": 1.30
+          "term5y": 1.3,
+          "demand": 0.05
         }
       }
     ]
@@ -78,45 +78,108 @@
   "lpr": {
     "current": {
       "date": "2026-09-20",
-      "lpr1y": 3.00,
-      "lpr5y": 3.50
+      "lpr1y": 3.0,
+      "lpr5y": 3.5
     },
     "history": [
-      { "date": "2026-09-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-08-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-07-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-06-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-05-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-04-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-03-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-02-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2026-01-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2025-12-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2025-11-20", "lpr1y": 3.00, "lpr5y": 3.50 },
-      { "date": "2025-10-20", "lpr1y": 3.00, "lpr5y": 3.50 }
+      {
+        "date": "2026-09-20",
+        "lpr1y": 3.0,
+        "lpr5y": 3.5
+      },
+      {
+        "date": "2025-04-30",
+        "lpr1y": 3.1,
+        "lpr5y": 3.6
+      },
+      {
+        "date": "2024-09-30",
+        "lpr1y": 3.35,
+        "lpr5y": 3.85
+      },
+      {
+        "date": "2024-06-28",
+        "lpr1y": 3.45,
+        "lpr5y": 3.95
+      },
+      {
+        "date": "2024-01-31",
+        "lpr1y": 3.45,
+        "lpr5y": 4.2
+      },
+      {
+        "date": "2023-07-31",
+        "lpr1y": 3.55,
+        "lpr5y": 4.2
+      },
+      {
+        "date": "2023-05-31",
+        "lpr1y": 3.65,
+        "lpr5y": 4.3
+      },
+      {
+        "date": "2022-07-29",
+        "lpr1y": 3.7,
+        "lpr5y": 4.45
+      },
+      {
+        "date": "2022-04-29",
+        "lpr1y": 3.7,
+        "lpr5y": 4.6
+      },
+      {
+        "date": "2021-12-31",
+        "lpr1y": 3.8,
+        "lpr5y": 4.65
+      },
+      {
+        "date": "2021-11-30",
+        "lpr1y": 3.85,
+        "lpr5y": 4.65
+      },
+      {
+        "date": "2020-03-31",
+        "lpr1y": 4.05,
+        "lpr5y": 4.75
+      },
+      {
+        "date": "2020-01-23",
+        "lpr1y": 4.15,
+        "lpr5y": 4.8
+      },
+      {
+        "date": "2019-10-31",
+        "lpr1y": 4.2,
+        "lpr5y": 4.85
+      },
+      {
+        "date": "2019-08-30",
+        "lpr1y": 4.25,
+        "lpr5y": 4.85
+      }
     ]
   },
   "fund": {
-    "first5yBelow": 2.10,
-    "first5yAbove": 2.60,
+    "first5yBelow": 2.1,
+    "first5yAbove": 2.6,
     "second5yBelow": 2.525,
     "second5yAbove": 3.075,
     "effectiveSince": "2025-05-08"
   },
   "mortgageReference": {
     "firstFloorMin": 3.05,
-    "firstFloorMax": 3.30,
-    "secondFloorMin": 3.30,
-    "secondFloorMax": 3.60,
+    "firstFloorMax": 3.2,
+    "secondFloorMin": 3.25,
+    "secondFloorMax": 3.45,
     "note": "首套房贷执行利率 ≈ LPR-45BP（参考城市：上海、北京等一线城市）"
   },
   "reference": {
-    "deposit1y": 0.95,
-    "treasury10y": 2.15,
-    "insuranceCap": 2.50,
-    "wealthManagement": 3.00,
-    "csi300_10y_annualized": 6.20,
-    "updatedDescription": "国债/股票每日自动；理财/保险为参考值（半年人工检查）",
-    "updatedAt": "2026-09-29"
+    "deposit1y": 0.96,
+    "treasury10y": 1.68,
+    "insuranceCap": 2.0,
+    "wealthManagement": 2.05,
+    "csi300_10y_annualized": 4.97,
+    "updatedDescription": "存款/国债/股票每日自动；寿险上限按监管季度机制联动；理财随官方半年报、年报更新",
+    "updatedAt": "2026-10-01"
   }
 }
