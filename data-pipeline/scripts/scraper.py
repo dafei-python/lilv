@@ -33,6 +33,7 @@ import math
 import re
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Optional
@@ -94,6 +95,27 @@ CSI300_HISTORY_URL = (
     "&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61"
     "&klt=101&fqt=1&end=20500101"
 )
+
+# 贵金属 / 汇率行情
+# 主源：上海黄金交易所官网（黄金/白银）、中国货币网（美元中间价）——均为官方发布
+# 备源：东方财富公开 K 线接口（无需 key）
+# fields2：f51 日期, f52 开盘, f53 收盘, f54 最高, f55 最低, f56 成交量
+SGE_DAILYHQ_URL = "https://www.sge.com.cn/graph/Dailyhq"
+CHINAMONEY_FX_URL = (
+    "https://www.chinamoney.com.cn/ags/ms/cm-u-bk-ccpr/CcprHisNew"
+    "?startDate={start}&endDate={end}&currency=USD/CNY"
+)
+EASTMONEY_KLINE_URL = (
+    "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+    "?secid={secid}&fields1=f1,f2,f3,f4,f5,f6"
+    "&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61"
+    "&klt=101&fqt=1&end=20500101&lmt=130"  # 近 130 个交易日 ≈ 半年
+)
+# (key, 名称, 单位, 价格小数位, SGE 合约代码, 东方财富 secid)
+METAL_SPECS = [
+    ("gold",   "黄金9999（上海金交所）", "元/克", 2, "Au99.99", "118.AU9999"),
+    ("silver", "白银T+D（上海金交所）",  "元/千克", 0, "Ag(T+D)", "118.AGTD"),
+]
 
 # 公积金贷款利率：央行调整时才变。脚本默认沿用旧值，
 # 央行发布新公告时请在此处更新 EFFECTIVE_SINCE 和四个数值。
@@ -177,6 +199,28 @@ def http_get_raw(url: str, headers: Optional[dict[str, str]] = None) -> str:
         cmd = ["curl", "-fsSL", "-m", str(TIMEOUT + 5)]
         for k, v in hdrs.items():
             cmd += ["-H", f"{k}: {v}"]
+        cmd.append(url)
+        proc = subprocess.run(cmd, capture_output=True)
+        if proc.returncode != 0:
+            raise RuntimeError(
+                f"requests/curl 均失败：{proc.stderr.decode(errors='replace')[:200]}"
+            )
+        return proc.stdout.decode("utf-8", errors="replace")
+
+def http_post_raw(url: str, data: dict[str, str],
+                  headers: Optional[dict[str, str]] = None) -> str:
+    """POST 表单：requests 优先，失败回退系统 curl（用于 SGE 官网）。"""
+    hdrs = headers or {"User-Agent": USER_AGENT}
+    try:
+        resp = requests.post(url, data=data, headers=hdrs, timeout=TIMEOUT)
+        resp.raise_for_status()
+        return resp.content.decode("utf-8", errors="replace")
+    except requests.RequestException:
+        cmd = ["curl", "-fsSL", "-m", str(TIMEOUT + 5), "-X", "POST"]
+        for k, v in hdrs.items():
+            cmd += ["-H", f"{k}: {v}"]
+        for k, v in data.items():
+            cmd += ["--data-urlencode", f"{k}={v}"]
         cmd.append(url)
         proc = subprocess.run(cmd, capture_output=True)
         if proc.returncode != 0:
@@ -613,6 +657,150 @@ def fetch_insurance_cap(prev_cap: float) -> float:
         return prev_cap
 
 # ============================================================
+# 贵金属（黄金/白银）与美元汇率（含近半年日线）
+# 主源官方发布，东方财富作为备源；任一链路全断则沿用旧 JSON
+# ============================================================
+
+def _build_quote(name: str, unit: str, ndigits: int,
+                 rows: list[tuple[str, float, float, float, float]],
+                 source: str) -> dict[str, Any]:
+    """把 [(date, open, close, low, high), ...]（升序）转成标准输出。"""
+    if len(rows) < 2:
+        raise ValueError("行情序列不足 2 条")
+    last_date, _last_open, price, low, high = rows[-1]
+    prev_close = rows[-2][2]
+    points = [{"date": d, "close": round(c, ndigits)} for d, _o, c, _l, _h in rows]
+    change = round(price - prev_close, ndigits)
+    change_pct = round((price - prev_close) / prev_close * 100, 2) if prev_close else 0.0
+    return {
+        "name": name,
+        "price": round(price, ndigits),
+        "unit": unit,
+        "change": change,
+        "changePct": change_pct,
+        "high": round(high, ndigits),
+        "low": round(low, ndigits),
+        "asOf": last_date,
+        "source": source,
+        "history": points,
+    }
+
+def fetch_sge_quote(instid: str, name: str, unit: str, ndigits: int) -> dict[str, Any]:
+    """上海黄金交易所官网：POST /graph/Dailyhq，返回全历史日线。
+    每行 [日期, 开盘, 收盘, 最低, 最高]，取最后 130 条（≈半年）。"""
+    text = http_post_raw(
+        SGE_DAILYHQ_URL,
+        data={"instid": instid},
+        headers={
+            "User-Agent": USER_AGENT,
+            "Referer": "https://www.sge.com.cn/sjzx/mrhq",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+    )
+    series = json.loads(text).get("time") or []
+    rows = [
+        (r[0], float(r[1]), float(r[2]), float(r[3]), float(r[4]))
+        for r in series if len(r) >= 5
+    ][-130:]
+    return _build_quote(name, unit, ndigits, rows, "上海黄金交易所")
+
+def fetch_eastmoney_quote(secid: str, name: str, unit: str, ndigits: int) -> dict[str, Any]:
+    """东方财富 K 线兜底。每行 日期,开盘,收盘,最高,最低,成交量。"""
+    text = http_get_raw(
+        EASTMONEY_KLINE_URL.format(secid=secid),
+        {"User-Agent": USER_AGENT, "Referer": "https://quote.eastmoney.com/"},
+    )
+    klines = (json.loads(text).get("data") or {}).get("klines") or []
+    rows = []
+    for line in klines:
+        p = line.split(",")
+        if len(p) >= 5:
+            rows.append((p[0], float(p[1]), float(p[2]), float(p[4]), float(p[3])))
+    return _build_quote(name, unit, ndigits, rows, "东方财富")
+
+def fetch_fx_chinamoney() -> dict[str, Any]:
+    """中国货币网：美元兑人民币中间价历史（顶层 records，降序）。
+    接口固定每页 15 条且禁止 pageSize 参数（WAF 403），
+    因此按 20 天自然日窗口分段（每窗工作日 ≤15 条），聚合去重。"""
+    end = datetime.now(CN_TZ).date()
+    start = end - timedelta(days=220)  # 拉足半年（扣除假期）
+    by_date: dict[str, float] = {}
+    window_end = end
+    while window_end >= start:
+        window_start = max(start, window_end - timedelta(days=19))
+        text = http_get_raw(
+            CHINAMONEY_FX_URL.format(start=window_start.isoformat(),
+                                     end=window_end.isoformat()),
+            {"User-Agent": USER_AGENT, "Referer": "https://www.chinamoney.com.cn/"},
+        )
+        for rec in json.loads(text).get("records") or []:
+            vals = rec.get("values") or []
+            if vals:
+                by_date[rec["date"]] = float(vals[0])
+        window_end = window_start - timedelta(days=1)
+        time.sleep(0.3)
+    rows = [(d, p, p, p, p) for d, p in sorted(by_date.items())][-130:]
+    return _build_quote("美元兑人民币中间价", "", 4, rows, "中国外汇交易中心")
+
+def fetch_fx_eastmoney() -> dict[str, Any]:
+    """东方财富：美元人民币中间价 secid=120.USDCNYC。"""
+    return fetch_eastmoney_quote("120.USDCNYC", "美元兑人民币中间价", "", 4)
+
+def fetch_metals(prev_metals: dict[str, Any]) -> dict[str, Any]:
+    """逐个品种抓：官方源 → 东财备源 → 旧 JSON 缓存。"""
+    out: dict[str, Any] = {}
+    latest_dates: list[str] = []
+
+    # 黄金、白银
+    for key, name, unit, ndigits, sge_instid, em_secid in METAL_SPECS:
+        quote = None
+        try:
+            quote = fetch_sge_quote(sge_instid, name, unit, ndigits)
+        except Exception as e:
+            print(f"[WARN] SGE {name} 失败：{e}，尝试东方财富", file=sys.stderr)
+        if quote is None:
+            try:
+                quote = fetch_eastmoney_quote(em_secid, name, unit, ndigits)
+            except Exception as e:
+                print(f"[WARN] 东方财富 {name} 也失败：{e}", file=sys.stderr)
+        if quote is not None:
+            out[key] = quote
+            latest_dates.append(quote["asOf"])
+        elif key in prev_metals:
+            out[key] = prev_metals[key]
+            latest_dates.append(out[key].get("asOf", ""))
+            print(f"[WARN] {name} 沿用旧值")
+
+    # 美元汇率
+    fx = None
+    try:
+        fx = fetch_fx_chinamoney()
+    except Exception as e:
+        print(f"[WARN] 货币网汇率失败：{e}，尝试东方财富", file=sys.stderr)
+    if fx is None:
+        try:
+            fx = fetch_fx_eastmoney()
+        except Exception as e:
+            print(f"[WARN] 东方财富汇率也失败：{e}", file=sys.stderr)
+    if fx is not None:
+        out["fx"] = fx
+        latest_dates.append(fx["asOf"])
+    elif "fx" in prev_metals:
+        out["fx"] = prev_metals["fx"]
+        latest_dates.append(out["fx"].get("asOf", ""))
+        print("[WARN] 美元汇率沿用旧值")
+
+    dates = [d for d in latest_dates if d]
+    out["updatedAt"] = max(dates) if dates else prev_metals.get("updatedAt", "")
+    for key in ("gold", "silver", "fx"):
+        if key in out:
+            q = out[key]
+            dec = 4 if key == "fx" else 2
+            print(f"[OK] {q['name']}：{q['price']}（{q['change']:+.{dec}f}，"
+                  f"{q['changePct']:+.2f}%，{q['asOf']}，源：{q['source']}）")
+    return out
+
+# ============================================================
 # 主流程
 # ============================================================
 
@@ -672,6 +860,9 @@ def main() -> int:
     prev_insurance_cap = prev_ref.get("insuranceCap", INSURANCE_CAP_FALLBACK)
     insurance_cap = fetch_insurance_cap(prev_insurance_cap)
 
+    # 贵金属 / 美元汇率（含近半年日线）；任一品种失败沿用旧快照
+    metals = fetch_metals(prev.get("metals", {}))
+
     # 存款 1 年定存：取五大行均值
     deposit_1y_list = [b.get("rates", {}).get("term1y", 0.0) for b in banks]
     deposit_1y = round(sum(deposit_1y_list) / max(len(deposit_1y_list), 1), 2)
@@ -694,6 +885,7 @@ def main() -> int:
         "fund": fund,
         "mortgageReference": mortgage,
         "reference": reference,
+        "metals": metals,
     }
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)

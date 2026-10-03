@@ -5,7 +5,7 @@
     <!-- 底部导航 -->
     <string name="tab_deposit">存款</string>
     <string name="tab_loan">贷款</string>
-    <string name="tab_calculator">计算器</string>
+    <string name="tab_markets">行情</string>
     <string name="tab_about">关于</string>
 
     <!-- 公共 -->
@@ -80,6 +80,18 @@
     <string name="calc_schedule_interest">利息</string>
     <string name="calc_schedule_remaining">剩余本金</string>
 
+    <!-- 行情（贵金属与汇率） -->
+    <string name="markets_title">贵金属与汇率</string>
+    <string name="markets_gold_title">黄金 9999</string>
+    <string name="markets_silver_title">白银 T+D</string>
+    <string name="markets_fx_title">美元兑人民币</string>
+    <string name="markets_as_of">%1$s 收盘</string>
+    <string name="markets_half_year">近半年</string>
+    <string name="markets_range">区间</string>
+    <string name="markets_chart_hint">近半年走势</string>
+    <string name="markets_unavailable">行情数据暂不可用，点击右上角刷新或稍后再试。</string>
+    <string name="markets_note">黄金（Au99.99，元/克）、白银（Ag T+D，元/千克）为上海黄金交易所合约收盘价；汇率为中国外汇交易中心公布的人民币汇率中间价（1 美元兑人民币）。数据每个交易日自动更新，节假日顺延；仅供参考，不构成投资建议。</string>
+
     <!-- 关于 -->
     <string name="about_title">关于</string>
     <string name="about_app_name">利率速查</string>
@@ -93,5 +105,5 @@
     <string name="about_disclaimer_title">免责声明</string>
     <string name="about_disclaimer_body">本应用展示的利率数据均来自公开渠道（中国人民银行、全国银行间同业拆借中心、各商业银行官网），仅供参考。实际业务利率以银行柜面为准。本应用不构成任何投资建议。</string>
     <string name="about_data_source_title">数据来源</string>
-    <string name="about_data_source_body">中国人民银行 · 全国银行间同业拆借中心（chinamoney.com.cn）\n工商银行 · 农业银行 · 中国银行 · 建设银行 · 邮储银行 官网\n每日自动更新，无需手动操作</string>
+    <string name="about_data_source_body">中国人民银行 · 全国银行间同业拆借中心（chinamoney.com.cn）\n工商银行 · 农业银行 · 中国银行 · 建设银行 · 邮储银行 官网\n上海黄金交易所（黄金 / 白银收盘价）\n每日自动更新，无需手动操作</string>
 </resources>

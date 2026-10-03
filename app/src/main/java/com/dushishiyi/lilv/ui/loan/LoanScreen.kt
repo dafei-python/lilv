@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dushishiyi.lilv.R
 import com.dushishiyi.lilv.ui.RatesViewModel
+import com.dushishiyi.lilv.ui.calculator.CalculatorPanel
 import com.dushishiyi.lilv.ui.components.ChangesBanner
 import com.dushishiyi.lilv.ui.components.SectionHeader
 
@@ -160,6 +161,16 @@ fun LoanScreen(viewModel: RatesViewModel) {
                             modifier = Modifier.weight(1f),
                         )
                     }
+                }
+
+                // ===== 贷款计算器（默认收起，避免页面过长）=====
+                item { Spacer(Modifier.height(20.dp)) }
+                item {
+                    CalculatorPanel(
+                        initialCommercialRate = "%.2f".format(data.lpr.current.lpr5y),
+                        initialFundRate = "%.2f".format(data.fund.first5yAbove),
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
                 }
             }
         }

@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.AttachMoney
-import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material.icons.rounded.AccountBalance
 import androidx.compose.material.icons.rounded.AttachMoney
-import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -31,9 +31,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dushishiyi.lilv.R
 import com.dushishiyi.lilv.ui.about.AboutScreen
-import com.dushishiyi.lilv.ui.calculator.CalculatorScreen
 import com.dushishiyi.lilv.ui.deposit.DepositScreen
 import com.dushishiyi.lilv.ui.loan.LoanScreen
+import com.dushishiyi.lilv.ui.markets.MarketsScreen
 
 @Composable
 fun LilvRoot() {
@@ -82,8 +82,8 @@ fun LilvRoot() {
             composable(LilvRoute.Loan.route) {
                 LoanScreen(viewModel = ratesVm)
             }
-            composable(LilvRoute.Calculator.route) {
-                CalculatorScreen()
+            composable(LilvRoute.Markets.route) {
+                MarketsScreen(viewModel = ratesVm)
             }
             composable(LilvRoute.About.route) {
                 AboutScreen()
@@ -108,9 +108,9 @@ sealed class LilvRoute(
         Icons.Outlined.AttachMoney, Icons.Rounded.AttachMoney,
     )
 
-    object Calculator : LilvRoute(
-        "calculator", R.string.tab_calculator,
-        Icons.Outlined.Calculate, Icons.Rounded.Calculate,
+    object Markets : LilvRoute(
+        "markets", R.string.tab_markets,
+        Icons.Outlined.TrendingUp, Icons.Rounded.TrendingUp,
     )
 
     object About : LilvRoute(
@@ -121,6 +121,6 @@ sealed class LilvRoute(
     companion object {
         // 用 getter 而非 val：避免 companion <clinit> 早于 sealed 子类 object 初始化导致首项为 null
         val all: List<LilvRoute>
-            get() = listOf(Deposit, Loan, Calculator, About)
+            get() = listOf(Deposit, Loan, Markets, About)
     }
 }

@@ -1,22 +1,31 @@
 package com.dushishiyi.lilv.ui.calculator
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Calculate
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
@@ -30,9 +39,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,9 +54,22 @@ import kotlin.math.pow
 private enum class CalcType { COMMERCIAL, FUND, COMBINED }
 private enum class CalcMethod { EQUAL_INTEREST, EQUAL_PRINCIPAL }
 
+/**
+ * 贷款计算器折叠面板（嵌在贷款页公积金模块下方）。
+ * 默认收起只占一行，点开后在固定高度卡片内完成输入与明细查看，
+ * 不把贷款页撑得过长。
+ *
+ * @param initialCommercialRate 商贷默认年利率，取最新 LPR 5 年期以上
+ * @param initialFundRate 公积金默认年利率，取首套 5 年以上
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalculatorScreen() {
+fun CalculatorPanel(
+    initialCommercialRate: String = "3.50",
+    initialFundRate: String = "2.60",
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
     var calcType by remember { mutableStateOf(CalcType.COMMERCIAL) }
     var method by remember { mutableStateOf(CalcMethod.EQUAL_INTEREST) }
 
@@ -54,8 +77,8 @@ fun CalculatorScreen() {
     var fundAmount by remember { mutableStateOf("80") }          // 组合贷：公积金部分
     var commercialAmount by remember { mutableStateOf("40") }    // 组合贷：商贷部分
     var years by remember { mutableStateOf("30") }
-    var commercialRate by remember { mutableStateOf("3.50") }    // LPR 5Y+ 默认
-    var fundRate by remember { mutableStateOf("2.60") }          // 公积金 5Y+ 首套默认
+    var commercialRate by remember { mutableStateOf(initialCommercialRate) }
+    var fundRate by remember { mutableStateOf(initialFundRate) }
 
     var result by remember { mutableStateOf<CalcResult?>(null) }
 
@@ -75,186 +98,264 @@ fun CalculatorScreen() {
         if (result != null) result = doCalc()
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp),
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
     ) {
-        item {
-            Text(
-                text = stringResource(R.string.calc_title),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // 贷款类型
-        item {
-            Text(stringResource(R.string.calc_type_preset), style = MaterialTheme.typography.labelLarge)
-            Spacer(Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(
-                    selected = calcType == CalcType.COMMERCIAL,
-                    onClick = { calcType = CalcType.COMMERCIAL },
-                    label = { Text(stringResource(R.string.calc_type_commercial)) },
-                )
-                FilterChip(
-                    selected = calcType == CalcType.FUND,
-                    onClick = { calcType = CalcType.FUND },
-                    label = { Text(stringResource(R.string.calc_type_fund)) },
-                )
-                FilterChip(
-                    selected = calcType == CalcType.COMBINED,
-                    onClick = { calcType = CalcType.COMBINED },
-                    label = { Text(stringResource(R.string.calc_type_combined)) },
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // 金额输入
-        item {
-            when (calcType) {
-                CalcType.COMBINED -> {
-                    OutlinedTextField(
-                        value = fundAmount,
-                        onValueChange = { fundAmount = it.filter { c -> c.isDigit() || c == '.' } },
-                        label = { Text(stringResource(R.string.calc_combined_fund_part)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = commercialAmount,
-                        onValueChange = { commercialAmount = it.filter { c -> c.isDigit() || c == '.' } },
-                        label = { Text(stringResource(R.string.calc_combined_commercial_part)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    )
-                }
-                else -> {
-                    OutlinedTextField(
-                        value = totalAmount,
-                        onValueChange = { totalAmount = it.filter { c -> c.isDigit() || c == '.' } },
-                        label = { Text(stringResource(R.string.calc_amount)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    )
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-        }
-
-        // 年限
-        item {
-            OutlinedTextField(
-                value = years,
-                onValueChange = { years = it.filter { c -> c.isDigit() } },
-                label = { Text(stringResource(R.string.calc_years)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
-            Spacer(Modifier.height(8.dp))
-        }
-
-        // 利率
-        if (calcType == CalcType.COMMERCIAL || calcType == CalcType.COMBINED) {
-            item {
-                OutlinedTextField(
-                    value = commercialRate,
-                    onValueChange = { commercialRate = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("商贷${stringResource(R.string.calc_rate)}") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                )
-                Spacer(Modifier.height(8.dp))
-            }
-        }
-        if (calcType == CalcType.FUND || calcType == CalcType.COMBINED) {
-            item {
-                OutlinedTextField(
-                    value = fundRate,
-                    onValueChange = { fundRate = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("公积金${stringResource(R.string.calc_rate)}") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                )
-                Spacer(Modifier.height(8.dp))
-            }
-        }
-
-        // 还款方式
-        item {
-            Text(stringResource(R.string.calc_method), style = MaterialTheme.typography.labelLarge)
-            Spacer(Modifier.height(6.dp))
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                SegmentedButton(
-                    selected = method == CalcMethod.EQUAL_INTEREST,
-                    onClick = { method = CalcMethod.EQUAL_INTEREST },
-                    shape = SegmentedButtonDefaults.itemShape(0, 2),
-                ) { Text(stringResource(R.string.calc_method_equal_interest)) }
-                SegmentedButton(
-                    selected = method == CalcMethod.EQUAL_PRINCIPAL,
-                    onClick = { method = CalcMethod.EQUAL_PRINCIPAL },
-                    shape = SegmentedButtonDefaults.itemShape(1, 2),
-                ) { Text(stringResource(R.string.calc_method_equal_principal)) }
-            }
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // 计算按钮
-        item {
-            Button(
-                onClick = { result = doCalc() },
-                modifier = Modifier.fillMaxWidth(),
+        Column(modifier = Modifier.padding(16.dp)) {
+            // 折叠头：整行可点
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { expanded = !expanded }
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(R.string.calc_action))
-            }
-        }
-
-        // 结果汇总 + 每期明细表格
-        result?.let { r ->
-            item {
-                Spacer(Modifier.height(16.dp))
-                ResultCard(r)
-                Spacer(Modifier.height(16.dp))
+                Icon(
+                    Icons.Rounded.Calculate,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.size(12.dp))
                 Text(
-                    text = stringResource(R.string.calc_schedule_title),
+                    text = stringResource(R.string.calc_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    Icons.Rounded.ExpandMore,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.rotate(if (expanded) 180f else 0f),
+                )
+            }
+
+            AnimatedVisibility(visible = expanded) {
+                val resultValue = result
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        // 无结果时随内容自适应（短）；出结果后固定高度，输入区/明细区各自滚动
+                        .then(if (resultValue != null) Modifier.height(700.dp) else Modifier),
+                ) {
+                    if (resultValue != null) {
+                        // ===== 有结果：输入区滚动 + 按钮 + 结果明细区 =====
+                        CalculatorInputs(
+                            modifier = Modifier.weight(1f),
+                            calcType = calcType, onCalcType = { calcType = it },
+                            totalAmount = totalAmount, onTotalAmount = { totalAmount = it },
+                            fundAmount = fundAmount, onFundAmount = { fundAmount = it },
+                            commercialAmount = commercialAmount, onCommercialAmount = { commercialAmount = it },
+                            years = years, onYears = { years = it },
+                            commercialRate = commercialRate, onCommercialRate = { commercialRate = it },
+                            fundRate = fundRate, onFundRate = { fundRate = it },
+                            method = method, onMethod = { method = it },
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Button(
+                            onClick = { result = doCalc() },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(stringResource(R.string.calc_action))
+                        }
+                        Column(modifier = Modifier.weight(1.2f).padding(top = 12.dp)) {
+                            ResultCard(resultValue)
+                            Spacer(Modifier.height(10.dp))
+                            Text(
+                                text = stringResource(R.string.calc_schedule_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Spacer(Modifier.height(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp)),
+                            ) {
+                                Column(Modifier.fillMaxSize()) {
+                                    ScheduleHeaderRow(
+                                        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+                                    )
+                                    LazyColumn(modifier = Modifier.weight(1f)) {
+                                        itemsIndexed(resultValue.schedule, key = { _, row -> row.index }) { idx, row ->
+                                            val bg = if (idx % 2 == 0) {
+                                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                                            } else {
+                                                MaterialTheme.colorScheme.surface
+                                            }
+                                            ScheduleRowItem(
+                                                row = row,
+                                                modifier = Modifier
+                                                    .background(bg)
+                                                    .then(
+                                                        if (idx == resultValue.schedule.lastIndex) {
+                                                            Modifier.clip(
+                                                                RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp),
+                                                            )
+                                                        } else Modifier,
+                                                    ),
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // ===== 无结果：卡片随输入内容自适应，按钮紧跟其后 =====
+                        CalculatorInputs(
+                            modifier = Modifier,
+                            calcType = calcType, onCalcType = { calcType = it },
+                            totalAmount = totalAmount, onTotalAmount = { totalAmount = it },
+                            fundAmount = fundAmount, onFundAmount = { fundAmount = it },
+                            commercialAmount = commercialAmount, onCommercialAmount = { commercialAmount = it },
+                            years = years, onYears = { years = it },
+                            commercialRate = commercialRate, onCommercialRate = { commercialRate = it },
+                            fundRate = fundRate, onFundRate = { fundRate = it },
+                            method = method, onMethod = { method = it },
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Button(
+                            onClick = { result = doCalc() },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(stringResource(R.string.calc_action))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CalculatorInputs(
+    calcType: CalcType,
+    onCalcType: (CalcType) -> Unit,
+    totalAmount: String,
+    onTotalAmount: (String) -> Unit,
+    fundAmount: String,
+    onFundAmount: (String) -> Unit,
+    commercialAmount: String,
+    onCommercialAmount: (String) -> Unit,
+    years: String,
+    onYears: (String) -> Unit,
+    commercialRate: String,
+    onCommercialRate: (String) -> Unit,
+    fundRate: String,
+    onFundRate: (String) -> Unit,
+    method: CalcMethod,
+    onMethod: (CalcMethod) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        Text(
+            stringResource(R.string.calc_type_preset),
+            style = MaterialTheme.typography.labelLarge,
+        )
+        Spacer(Modifier.height(6.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = calcType == CalcType.COMMERCIAL,
+                onClick = { onCalcType(CalcType.COMMERCIAL) },
+                label = { Text(stringResource(R.string.calc_type_commercial)) },
+            )
+            FilterChip(
+                selected = calcType == CalcType.FUND,
+                onClick = { onCalcType(CalcType.FUND) },
+                label = { Text(stringResource(R.string.calc_type_fund)) },
+            )
+            FilterChip(
+                selected = calcType == CalcType.COMBINED,
+                onClick = { onCalcType(CalcType.COMBINED) },
+                label = { Text(stringResource(R.string.calc_type_combined)) },
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+
+        when (calcType) {
+            CalcType.COMBINED -> {
+                OutlinedTextField(
+                    value = fundAmount,
+                    onValueChange = { onFundAmount(it.filter { c -> c.isDigit() || c == '.' }) },
+                    label = { Text(stringResource(R.string.calc_combined_fund_part)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 )
                 Spacer(Modifier.height(8.dp))
-                // 表头（圆角顶部 + 底色）
-                ScheduleHeaderRow(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                OutlinedTextField(
+                    value = commercialAmount,
+                    onValueChange = { onCommercialAmount(it.filter { c -> c.isDigit() || c == '.' }) },
+                    label = { Text(stringResource(R.string.calc_combined_commercial_part)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 )
             }
-            itemsIndexed(r.schedule, key = { _, row -> row.index }) { idx, row ->
-                val isLast = idx == r.schedule.lastIndex
-                val shape = if (isLast) {
-                    RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-                } else {
-                    RectangleShape
-                }
-                // 斑马纹：偶数行淡底色，奇数行透明
-                val bg = if (idx % 2 == 0) {
-                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
-                } else {
-                    MaterialTheme.colorScheme.surface
-                }
-                ScheduleRowItem(
-                    row = row,
-                    modifier = Modifier.clip(shape).background(bg),
+            else -> {
+                OutlinedTextField(
+                    value = totalAmount,
+                    onValueChange = { onTotalAmount(it.filter { c -> c.isDigit() || c == '.' }) },
+                    label = { Text(stringResource(R.string.calc_amount)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 )
             }
+        }
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
+            value = years,
+            onValueChange = { onYears(it.filter { c -> c.isDigit() }) },
+            label = { Text(stringResource(R.string.calc_years)) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
+        if (calcType == CalcType.COMMERCIAL || calcType == CalcType.COMBINED) {
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(
+                value = commercialRate,
+                onValueChange = { onCommercialRate(it.filter { c -> c.isDigit() || c == '.' }) },
+                label = { Text("商贷${stringResource(R.string.calc_rate)}") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            )
+        }
+        if (calcType == CalcType.FUND || calcType == CalcType.COMBINED) {
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(
+                value = fundRate,
+                onValueChange = { onFundRate(it.filter { c -> c.isDigit() || c == '.' }) },
+                label = { Text("公积金${stringResource(R.string.calc_rate)}") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+        Text(
+            stringResource(R.string.calc_method),
+            style = MaterialTheme.typography.labelLarge,
+        )
+        Spacer(Modifier.height(6.dp))
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            SegmentedButton(
+                selected = method == CalcMethod.EQUAL_INTEREST,
+                onClick = { onMethod(CalcMethod.EQUAL_INTEREST) },
+                shape = SegmentedButtonDefaults.itemShape(0, 2),
+            ) { Text(stringResource(R.string.calc_method_equal_interest)) }
+            SegmentedButton(
+                selected = method == CalcMethod.EQUAL_PRINCIPAL,
+                onClick = { onMethod(CalcMethod.EQUAL_PRINCIPAL) },
+                shape = SegmentedButtonDefaults.itemShape(1, 2),
+            ) { Text(stringResource(R.string.calc_method_equal_principal)) }
         }
     }
 }

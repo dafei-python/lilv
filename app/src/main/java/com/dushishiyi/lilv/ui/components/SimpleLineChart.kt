@@ -4,20 +4,20 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dushishiyi.lilv.ui.theme.RateDown
 import com.dushishiyi.lilv.ui.theme.RateUp
 
 /**
- * 简洁的折线图：用于 LPR 历史走势。
+ * 简洁的折线图：用于 LPR 历史走势、贵金属/汇率近半年走势。
  * - 数据点 [points]：从左到右
  * - 自动归一化到画布
  * - 末点（最新）画一个高亮圆点
@@ -30,13 +30,16 @@ fun SimpleLineChart(
     modifier: Modifier = Modifier,
     lineColor: Color = RateDown,
     dotColor: Color = RateUp,
+    height: Dp = 120.dp,
+    valueDigits: Int = 2,
+    showValueLabel: Boolean = true,
 ) {
     if (points.isEmpty()) return
 
     Canvas(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(height)
     ) {
         val maxV = points.max()
         val minV = points.min()
@@ -84,17 +87,19 @@ fun SimpleLineChart(
         )
 
         // 末值标注
-        drawContext.canvas.nativeCanvas.apply {
-            drawText(
-                "%.2f".format(last),
-                lastOffset.x - 16,
-                lastOffset.y - 12,
-                android.graphics.Paint().apply {
-                    color = android.graphics.Color.argb(220, 80, 80, 80)
-                    textSize = 11.sp.toPx()
-                    isAntiAlias = true
-                }
-            )
+        if (showValueLabel) {
+            drawContext.canvas.nativeCanvas.apply {
+                drawText(
+                    "%." + valueDigits + "f".format(last),
+                    lastOffset.x - 16,
+                    lastOffset.y - 12,
+                    android.graphics.Paint().apply {
+                        color = android.graphics.Color.argb(220, 80, 80, 80)
+                        textSize = 11.sp.toPx()
+                        isAntiAlias = true
+                    }
+                )
+            }
         }
     }
 }
