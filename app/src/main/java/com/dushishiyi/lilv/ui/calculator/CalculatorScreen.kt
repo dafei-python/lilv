@@ -135,34 +135,35 @@ fun CalculatorPanel(
 
             AnimatedVisibility(visible = expanded) {
                 val resultValue = result
+                // 固定高度卡片：本面板位于贷款页 LazyColumn 内，内层滚动组件必须拿到
+                // 有限高度约束，否则会抛 "infinity maximum height constraints"。
+                // 输入区与结果明细区各自占比滚动，「开始计算」按钮常驻可见。
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
-                        // 无结果时随内容自适应（短）；出结果后固定高度，输入区/明细区各自滚动
-                        .then(if (resultValue != null) Modifier.height(700.dp) else Modifier),
+                        .height(640.dp),
                 ) {
+                    CalculatorInputs(
+                        modifier = Modifier.weight(1f),
+                        calcType = calcType, onCalcType = { calcType = it },
+                        totalAmount = totalAmount, onTotalAmount = { totalAmount = it },
+                        fundAmount = fundAmount, onFundAmount = { fundAmount = it },
+                        commercialAmount = commercialAmount, onCommercialAmount = { commercialAmount = it },
+                        years = years, onYears = { years = it },
+                        commercialRate = commercialRate, onCommercialRate = { commercialRate = it },
+                        fundRate = fundRate, onFundRate = { fundRate = it },
+                        method = method, onMethod = { method = it },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Button(
+                        onClick = { result = doCalc() },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(R.string.calc_action))
+                    }
                     if (resultValue != null) {
-                        // ===== 有结果：输入区滚动 + 按钮 + 结果明细区 =====
-                        CalculatorInputs(
-                            modifier = Modifier.weight(1f),
-                            calcType = calcType, onCalcType = { calcType = it },
-                            totalAmount = totalAmount, onTotalAmount = { totalAmount = it },
-                            fundAmount = fundAmount, onFundAmount = { fundAmount = it },
-                            commercialAmount = commercialAmount, onCommercialAmount = { commercialAmount = it },
-                            years = years, onYears = { years = it },
-                            commercialRate = commercialRate, onCommercialRate = { commercialRate = it },
-                            fundRate = fundRate, onFundRate = { fundRate = it },
-                            method = method, onMethod = { method = it },
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        Button(
-                            onClick = { result = doCalc() },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(stringResource(R.string.calc_action))
-                        }
-                        Column(modifier = Modifier.weight(1.2f).padding(top = 12.dp)) {
+                        Column(modifier = Modifier.weight(1.3f).padding(top = 12.dp)) {
                             ResultCard(resultValue)
                             Spacer(Modifier.height(10.dp))
                             Text(
@@ -204,26 +205,6 @@ fun CalculatorPanel(
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        // ===== 无结果：卡片随输入内容自适应，按钮紧跟其后 =====
-                        CalculatorInputs(
-                            modifier = Modifier,
-                            calcType = calcType, onCalcType = { calcType = it },
-                            totalAmount = totalAmount, onTotalAmount = { totalAmount = it },
-                            fundAmount = fundAmount, onFundAmount = { fundAmount = it },
-                            commercialAmount = commercialAmount, onCommercialAmount = { commercialAmount = it },
-                            years = years, onYears = { years = it },
-                            commercialRate = commercialRate, onCommercialRate = { commercialRate = it },
-                            fundRate = fundRate, onFundRate = { fundRate = it },
-                            method = method, onMethod = { method = it },
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        Button(
-                            onClick = { result = doCalc() },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(stringResource(R.string.calc_action))
                         }
                     }
                 }
