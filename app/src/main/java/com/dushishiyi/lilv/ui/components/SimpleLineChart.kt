@@ -89,16 +89,20 @@ fun SimpleLineChart(
         // 末值标注
         if (showValueLabel) {
             drawContext.canvas.nativeCanvas.apply {
-                drawText(
-                    "%." + valueDigits + "f".format(last),
-                    lastOffset.x - 16,
-                    lastOffset.y - 12,
-                    android.graphics.Paint().apply {
-                        color = android.graphics.Color.argb(220, 80, 80, 80)
-                        textSize = 11.sp.toPx()
-                        isAntiAlias = true
-                    }
-                )
+                val label = "%.${valueDigits}f".format(last)
+                val paint = android.graphics.Paint().apply {
+                    color = android.graphics.Color.argb(220, 80, 80, 80)
+                    textSize = 11.sp.toPx()
+                    isAntiAlias = true
+                }
+                val labelWidth = paint.measureText(label)
+                // 末点贴近右缘时把文字收在点的左侧，避免裁切
+                val labelX = if (lastOffset.x + labelWidth + 4.dp.toPx() > size.width) {
+                    lastOffset.x - labelWidth - 8.dp.toPx()
+                } else {
+                    lastOffset.x - 16
+                }
+                drawText(label, labelX, lastOffset.y - 12, paint)
             }
         }
     }
