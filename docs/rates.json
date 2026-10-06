@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-05T15:23:50+08:00",
+  "generatedAt": "2026-10-06T15:50:26+08:00",
   "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网 / 东方财富",
   "deposit": {
     "banks": [
@@ -62,7 +62,7 @@
       {
         "code": "psbc",
         "name": "中国邮政储蓄银行",
-        "updatedAt": "2026-10-05",
+        "updatedAt": "2026-10-06",
         "rates": {
           "term3m": 0.65,
           "term6m": 0.86,
@@ -180,7 +180,7 @@
     "wealthManagement": 2.05,
     "csi300_10y_annualized": 4.97,
     "updatedDescription": "存款/国债/股票每日自动；寿险上限按监管季度机制联动；理财随官方半年报、年报更新",
-    "updatedAt": "2026-10-05"
+    "updatedAt": "2026-10-06"
   },
   "metals": {
     "gold": {
