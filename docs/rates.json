@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T15:45:54+08:00",
+  "generatedAt": "2026-10-09T15:42:34+08:00",
   "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网 / 东方财富",
   "deposit": {
     "banks": [
@@ -62,7 +62,7 @@
       {
         "code": "psbc",
         "name": "中国邮政储蓄银行",
-        "updatedAt": "2026-10-08",
+        "updatedAt": "2026-10-09",
         "rates": {
           "term3m": 0.65,
           "term6m": 0.86,
@@ -175,29 +175,25 @@
   },
   "reference": {
     "deposit1y": 0.96,
-    "treasury10y": 1.68,
+    "treasury10y": 1.69,
     "insuranceCap": 2.0,
     "wealthManagement": 2.05,
-    "csi300_10y_annualized": 4.73,
+    "csi300_10y_annualized": 4.74,
     "updatedDescription": "存款/国债/股票每日自动；寿险上限按监管季度机制联动；理财随官方半年报、年报更新",
-    "updatedAt": "2026-10-08"
+    "updatedAt": "2026-10-09"
   },
   "metals": {
     "gold": {
       "name": "黄金9999（上海金交所）",
-      "price": 907.32,
+      "price": 892.0,
       "unit": "元/克",
-      "change": 9.79,
-      "changePct": 1.09,
-      "high": 909.0,
-      "low": 897.5,
-      "asOf": "2026-09-30",
+      "change": -15.32,
+      "changePct": -1.69,
+      "high": 896.3,
+      "low": 889.0,
+      "asOf": "2026-10-08",
       "source": "上海黄金交易所",
       "history": [
-        {
-          "date": "2026-03-25",
-          "close": 1015.45
-        },
         {
           "date": "2026-03-26",
           "close": 991.36
@@ -713,24 +709,24 @@
         {
           "date": "2026-09-30",
           "close": 907.32
+        },
+        {
+          "date": "2026-10-08",
+          "close": 892.0
         }
       ]
     },
     "silver": {
       "name": "白银T+D（上海金交所）",
-      "price": 14896.0,
+      "price": 14336.0,
       "unit": "元/千克",
-      "change": 98.0,
-      "changePct": 0.66,
-      "high": 14999.0,
-      "low": 14766.0,
-      "asOf": "2026-09-30",
+      "change": -560.0,
+      "changePct": -3.76,
+      "high": 14719.0,
+      "low": 14271.0,
+      "asOf": "2026-10-08",
       "source": "上海黄金交易所",
       "history": [
-        {
-          "date": "2026-03-25",
-          "close": 18121.0
-        },
         {
           "date": "2026-03-26",
           "close": 17292.0
@@ -1246,24 +1242,24 @@
         {
           "date": "2026-09-30",
           "close": 14896.0
+        },
+        {
+          "date": "2026-10-08",
+          "close": 14336.0
         }
       ]
     },
     "fx": {
       "name": "美元兑人民币中间价",
-      "price": 6.7367,
+      "price": 6.733,
       "unit": "",
-      "change": 0.0016,
-      "changePct": 0.02,
-      "high": 6.7367,
-      "low": 6.7367,
-      "asOf": "2026-10-08",
+      "change": -0.0037,
+      "changePct": -0.05,
+      "high": 6.733,
+      "low": 6.733,
+      "asOf": "2026-10-09",
       "source": "中国外汇交易中心",
       "history": [
-        {
-          "date": "2026-03-26",
-          "close": 6.9056
-        },
         {
           "date": "2026-03-27",
           "close": 6.9141
@@ -1779,9 +1775,13 @@
         {
           "date": "2026-10-08",
           "close": 6.7367
+        },
+        {
+          "date": "2026-10-09",
+          "close": 6.733
         }
       ]
     },
-    "updatedAt": "2026-10-08"
+    "updatedAt": "2026-10-09"
   }
 }
