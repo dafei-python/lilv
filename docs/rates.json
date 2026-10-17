@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T14:06:12+08:00",
+  "generatedAt": "2026-10-17T13:51:53+08:00",
   "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网 / 东方财富",
   "deposit": {
     "banks": [
@@ -62,7 +62,7 @@
       {
         "code": "psbc",
         "name": "中国邮政储蓄银行",
-        "updatedAt": "2026-10-16",
+        "updatedAt": "2026-10-17",
         "rates": {
           "term3m": 0.65,
           "term6m": 0.86,
@@ -175,29 +175,25 @@
   },
   "reference": {
     "deposit1y": 0.96,
-    "treasury10y": 1.66,
+    "treasury10y": 1.65,
     "insuranceCap": 2.0,
     "wealthManagement": 2.05,
-    "csi300_10y_annualized": 4.41,
+    "csi300_10y_annualized": 4.44,
     "updatedDescription": "存款/国债/股票每日自动；寿险上限按监管季度机制联动；理财随官方半年报、年报更新",
-    "updatedAt": "2026-10-16"
+    "updatedAt": "2026-10-17"
   },
   "metals": {
     "gold": {
       "name": "黄金9999（上海金交所）",
-      "price": 892.96,
+      "price": 901.57,
       "unit": "元/克",
-      "change": -1.54,
-      "changePct": -0.17,
-      "high": 899.0,
-      "low": 880.0,
-      "asOf": "2026-10-15",
+      "change": 8.61,
+      "changePct": 0.96,
+      "high": 902.0,
+      "low": 893.0,
+      "asOf": "2026-10-16",
       "source": "上海黄金交易所",
       "history": [
-        {
-          "date": "2026-04-02",
-          "close": 1027.5
-        },
         {
           "date": "2026-04-03",
           "close": 1034.42
@@ -713,24 +709,24 @@
         {
           "date": "2026-10-15",
           "close": 892.96
+        },
+        {
+          "date": "2026-10-16",
+          "close": 901.57
         }
       ]
     },
     "silver": {
       "name": "白银T+D（上海金交所）",
-      "price": 13704.0,
+      "price": 14018.0,
       "unit": "元/千克",
-      "change": -514.0,
-      "changePct": -3.62,
-      "high": 14286.0,
-      "low": 13450.0,
-      "asOf": "2026-10-15",
+      "change": 314.0,
+      "changePct": 2.29,
+      "high": 14040.0,
+      "low": 13676.0,
+      "asOf": "2026-10-16",
       "source": "上海黄金交易所",
       "history": [
-        {
-          "date": "2026-04-02",
-          "close": 17680.0
-        },
         {
           "date": "2026-04-03",
           "close": 17803.0
@@ -1246,6 +1242,10 @@
         {
           "date": "2026-10-15",
           "close": 13704.0
+        },
+        {
+          "date": "2026-10-16",
+          "close": 14018.0
         }
       ]
     },
