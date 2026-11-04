@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-03T16:16:00+08:00",
+  "generatedAt": "2026-11-04T15:45:33+08:00",
   "source": "中国人民银行 / 全国银行间同业拆借中心 / 各行官网 / 东方财富",
   "deposit": {
     "banks": [
@@ -62,7 +62,7 @@
       {
         "code": "psbc",
         "name": "中国邮政储蓄银行",
-        "updatedAt": "2026-11-03",
+        "updatedAt": "2026-11-04",
         "rates": {
           "term3m": 0.65,
           "term6m": 0.86,
@@ -175,12 +175,12 @@
   },
   "reference": {
     "deposit1y": 0.96,
-    "treasury10y": 1.63,
+    "treasury10y": 1.62,
     "insuranceCap": 2.0,
     "wealthManagement": 2.05,
     "csi300_10y_annualized": 3.77,
     "updatedDescription": "存款/国债/股票每日自动；寿险上限按监管季度机制联动；理财随官方半年报、年报更新",
-    "updatedAt": "2026-11-03"
+    "updatedAt": "2026-11-04"
   },
   "metals": {
     "gold": {
@@ -1251,19 +1251,15 @@
     },
     "fx": {
       "name": "美元兑人民币中间价",
-      "price": 6.715,
+      "price": 6.718,
       "unit": "",
-      "change": 0.0004,
-      "changePct": 0.01,
-      "high": 6.715,
-      "low": 6.715,
-      "asOf": "2026-11-03",
+      "change": 0.003,
+      "changePct": 0.04,
+      "high": 6.718,
+      "low": 6.718,
+      "asOf": "2026-11-04",
       "source": "中国外汇交易中心",
       "history": [
-        {
-          "date": "2026-04-22",
-          "close": 6.8635
-        },
         {
           "date": "2026-04-23",
           "close": 6.865
@@ -1779,9 +1775,13 @@
         {
           "date": "2026-11-03",
           "close": 6.715
+        },
+        {
+          "date": "2026-11-04",
+          "close": 6.718
         }
       ]
     },
-    "updatedAt": "2026-11-03"
+    "updatedAt": "2026-11-04"
   }
 }
